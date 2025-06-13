@@ -19,12 +19,18 @@ module.exports = {
         danger: '#ef4444',
         muted: '#6b7280',
         primary: '#55a4ff',
-        primaryDark: '#2a7ed9',
-        primaryLight: '#a8d4ff',
+        'primary-dark': '#2a7ed9',
+        'primary-light': '#a8d4ff',
         text: '#1a1a1a',
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+      },
+      minWidth: {
+        'icon-button': '80px', // Minimum width for icon buttons
+      },
+      spacing: {
+        '0.5': '2px', // For fine-tuned spacing in icon designs
       },
     },
   },

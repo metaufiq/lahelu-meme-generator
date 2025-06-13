@@ -2,12 +2,13 @@ import {FC, useCallback, useEffect, useState} from 'react';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Text, View, TouchableOpacity} from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {CanvasState, ImageElement, TextElement} from '../../types';
 
 import {MemeCanvas} from '../../components/Canvas/MemeCanvas';
-import {TextControls} from '../../components/Controls/TextControls';
+import {TextControls} from '../../components/TextControls';
 import {RootStackParamList} from '../../routes/types';
 import {Button} from '../../components/Button';
 
@@ -94,6 +95,11 @@ const MemeCanvasScreen: FC<MemeCanvasScreenProps> = ({navigation, route}) => {
     t => t.id === selectedElementId,
   );
 
+  const clearSelection = () => {
+    setSelectedElementId(null);
+    setSelectedElementType(null);
+  };
+
   // Empty state when no template is selected
   if (!canvasState.template) {
     return (
@@ -135,50 +141,86 @@ const MemeCanvasScreen: FC<MemeCanvasScreenProps> = ({navigation, route}) => {
         />
       </View>
 
-      {/* Text Controls (when text element is selected) */}
-      {selectedElementType === 'text' && selectedTextElement && (
-        <View className="bg-white border-t border-gray-200">
-          <TextControls
-            element={selectedTextElement}
-            onUpdate={updatedElement => {
-              const updatedTexts = canvasState.textElements.map(t =>
-                t.id === updatedElement.id ? updatedElement : t,
-              );
-              setCanvasState(prev => ({...prev, textElements: updatedTexts}));
-            }}
-            onDelete={() => {
-              const filteredTexts = canvasState.textElements.filter(
-                t => t.id !== selectedElementId,
-              );
-              setCanvasState(prev => ({...prev, textElements: filteredTexts}));
-              setSelectedElementId(null);
-              setSelectedElementType(null);
-            }}
-            onDuplicate={() => {
-              if (selectedTextElement) {
-                const duplicated = {
-                  ...selectedTextElement,
-                  id: Date.now().toString(),
-                  x: selectedTextElement.x + 20,
-                  y: selectedTextElement.y + 20,
-                };
+      {/* Combined Bottom Controls */}
+      <View className="bg-white border-t border-gray-200">
+        {selectedElementType === 'text' && selectedTextElement ? (
+          // Text Controls
+          <View>
+            {/* Back to tools button */}
+            <View className="px-4 pt-3 pb-2 border-b border-gray-100">
+              <TouchableOpacity
+                onPress={clearSelection}
+                className="flex-row items-center">
+                <MaterialIcons name="arrow-back" size={16} color="#55a4ff" />
+                <Text className="text-primary text-sm font-medium ml-1">
+                  Back to Tools
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <TextControls
+              element={selectedTextElement}
+              onUpdate={updatedElement => {
+                const updatedTexts = canvasState.textElements.map(t =>
+                  t.id === updatedElement.id ? updatedElement : t,
+                );
+                setCanvasState(prev => ({...prev, textElements: updatedTexts}));
+              }}
+              onDelete={() => {
+                const filteredTexts = canvasState.textElements.filter(
+                  t => t.id !== selectedElementId,
+                );
                 setCanvasState(prev => ({
                   ...prev,
-                  textElements: [...prev.textElements, duplicated],
+                  textElements: filteredTexts,
                 }));
-              }
-            }}
-          />
-        </View>
-      )}
+                clearSelection();
+              }}
+              onDuplicate={() => {
+                if (selectedTextElement) {
+                  const duplicated = {
+                    ...selectedTextElement,
+                    id: Date.now().toString(),
+                    x: selectedTextElement.x + 20,
+                    y: selectedTextElement.y + 20,
+                  };
+                  setCanvasState(prev => ({
+                    ...prev,
+                    textElements: [...prev.textElements, duplicated],
+                  }));
+                }
+              }}
+            />
+          </View>
+        ) : (
+          // Add Tools Navigation
+          <View className="p-4">
+            <Text className="text-center text-gray-600 text-sm font-medium mb-3">
+              Add Elements
+            </Text>
+            <View className="flex-row justify-center gap-8">
+              {/* Add Text Button */}
+              <Button
+                onPress={addText}
+                className="flex-col justify-center items-center">
+                <View className="w-12 h-12 bg-primary rounded-xl items-center justify-center mb-2">
+                  <MaterialIcons name="text-fields" size={24} color="white" />
+                </View>
+                <Text className="text-primary font-medium text-sm">Text</Text>
+              </Button>
 
-      {/* Bottom Navigation */}
-      <View className="bg-white border-t border-gray-200 ">
-        <View className="flex-row justify-center p-2 gap-4">
-          <Button onPress={addText} title="Add Text" />
-
-          <Button onPress={addImage} title="Add Image" />
-        </View>
+              {/* Add Image Button */}
+              <Button
+                onPress={addImage}
+                className="flex-col justify-center items-center">
+                <View className="w-12 h-12 bg-primary rounded-xl items-center justify-center mb-2">
+                  <MaterialIcons name="image" size={24} color="white" />
+                </View>
+                <Text className="text-primary font-medium text-sm">Image</Text>
+              </Button>
+            </View>
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );

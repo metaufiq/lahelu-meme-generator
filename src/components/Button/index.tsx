@@ -51,13 +51,13 @@ export const Button: React.FC<ButtonProps> = ({
 
   // Color variants
   const variantClasses = {
-    primary: isDisabled ? 'bg-gray-300' : 'bg-primary active:bg-primaryDark',
+    primary: isDisabled ? 'bg-gray-300' : 'bg-primary active:bg-primary-dark',
     secondary: isDisabled
       ? 'bg-gray-300'
       : 'bg-gray-100 active:bg-gray-200 border border-gray-300',
     outline: isDisabled
       ? 'border border-gray-300 bg-transparent'
-      : 'border border-primary bg-transparent active:bg-primaryLight active:bg-opacity-20',
+      : 'border border-primary bg-transparent active:bg-primary-light active:bg-opacity-20',
     ghost: isDisabled ? 'bg-transparent' : 'bg-transparent active:bg-gray-100',
     danger: isDisabled ? 'bg-gray-300' : 'bg-red-500 active:bg-red-600',
   };
