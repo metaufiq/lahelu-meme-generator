@@ -1,129 +1,195 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+// App.tsx
+import React, {useState} from 'react';
 import {
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
+  SafeAreaView,
   View,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
 } from 'react-native';
-
+import {launchImageLibrary} from 'react-native-image-picker';
+import {MemeCanvas} from './src/components/Canvas/MemeCanvas';
+import {TemplateGrid} from './src/components/TemplateSelector/TemplateGrid';
+import {TextControls} from './src/components/Controls/TextControls';
 import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+  CanvasState,
+  TextElement,
+  ImageElement,
+  MemeTemplate,
+} from './src/types';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
+const App: React.FC = () => {
+  const [showTemplates, setShowTemplates] = useState(true);
+  const [selectedElementId, setSelectedElementId] = useState<string | null>(
+    null,
   );
-}
+  const [selectedElementType, setSelectedElementType] = useState<
+    'text' | 'image' | null
+  >(null);
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const [canvasState, setCanvasState] = useState<CanvasState>({
+    template: null,
+    textElements: [],
+    imageElements: [],
+    scale: 1,
+    translateX: 0,
+    translateY: 0,
+  });
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  const handleSelectTemplate = (template: MemeTemplate) => {
+    setCanvasState(prev => ({
+      ...prev,
+      template,
+      textElements: [],
+      imageElements: [],
+    }));
+    setShowTemplates(false);
   };
 
-  /*
-   * To keep the template simple and small we're adding padding to prevent view
-   * from rendering under the System UI.
-   * For bigger apps the recommendation is to use `react-native-safe-area-context`:
-   * https://github.com/AppAndFlow/react-native-safe-area-context
-   *
-   * You can read more about it here:
-   * https://github.com/react-native-community/discussions-and-proposals/discussions/827
-   */
-  const safePadding = '5%';
+  const addText = () => {
+    const newText: TextElement = {
+      id: Date.now().toString(),
+      text: 'Your text here',
+      x: 50,
+      y: 50,
+      fontSize: 24,
+      color: '#FFFFFF',
+      fontFamily: 'Arial',
+      rotation: 0,
+      scale: 1,
+    };
+    setCanvasState(prev => ({
+      ...prev,
+      textElements: [...prev.textElements, newText],
+    }));
+  };
+
+  const addImage = () => {
+    launchImageLibrary({mediaType: 'photo'}, response => {
+      if (response.assets && response.assets[0]) {
+        const asset = response.assets[0];
+        const newImage: ImageElement = {
+          id: Date.now().toString(),
+          uri: asset.uri!,
+          x: 50,
+          y: 50,
+          width: 100,
+          height: 100,
+          rotation: 0,
+          scale: 1,
+          opacity: 1,
+        };
+        setCanvasState(prev => ({
+          ...prev,
+          imageElements: [...prev.imageElements, newImage],
+        }));
+      }
+    });
+  };
+
+  const selectedTextElement = canvasState.textElements.find(
+    t => t.id === selectedElementId,
+  );
+
+  if (showTemplates) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.title}>Choose a Meme Template</Text>
+        <TemplateGrid onSelectTemplate={handleSelectTemplate} />
+      </SafeAreaView>
+    );
+  }
 
   return (
-    <View style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.headerButton}
+          onPress={() => setShowTemplates(true)}>
+          <Text style={styles.headerButtonText}>Templates</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.headerButton} onPress={addText}>
+          <Text style={styles.headerButtonText}>Add Text</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.headerButton} onPress={addImage}>
+          <Text style={styles.headerButtonText}>Add Image</Text>
+        </TouchableOpacity>
+      </View>
+
+      <MemeCanvas
+        canvasState={canvasState}
+        onUpdateCanvas={updates =>
+          setCanvasState(prev => ({...prev, ...updates}))
+        }
+        onSelectElement={(id, type) => {
+          setSelectedElementId(id);
+          setSelectedElementType(type);
+        }}
       />
-      <ScrollView style={backgroundStyle}>
-        <View style={{paddingRight: safePadding}}>
-          <Header />
-        </View>
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-            paddingHorizontal: safePadding,
-            paddingBottom: safePadding,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change
-            thisasdsa screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </View>
+
+      {selectedElementType === 'text' && selectedTextElement && (
+        <TextControls
+          element={selectedTextElement}
+          onUpdate={updatedElement => {
+            const updatedTexts = canvasState.textElements.map(t =>
+              t.id === updatedElement.id ? updatedElement : t,
+            );
+            setCanvasState(prev => ({...prev, textElements: updatedTexts}));
+          }}
+          onDelete={() => {
+            const filteredTexts = canvasState.textElements.filter(
+              t => t.id !== selectedElementId,
+            );
+            setCanvasState(prev => ({...prev, textElements: filteredTexts}));
+            setSelectedElementId(null);
+            setSelectedElementType(null);
+          }}
+          onDuplicate={() => {
+            if (selectedTextElement) {
+              const duplicated = {
+                ...selectedTextElement,
+                id: Date.now().toString(),
+                x: selectedTextElement.x + 20,
+                y: selectedTextElement.y + 20,
+              };
+              setCanvasState(prev => ({
+                ...prev,
+                textElements: [...prev.textElements, duplicated],
+              }));
+            }
+          }}
+        />
+      )}
+    </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
   },
-  sectionTitle: {
+  title: {
     fontSize: 24,
-    fontWeight: '600',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    padding: 20,
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
   },
-  highlight: {
-    fontWeight: '700',
+  headerButton: {
+    padding: 10,
+    backgroundColor: '#007AFF',
+    borderRadius: 8,
+  },
+  headerButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 
