@@ -17,7 +17,6 @@ module.exports = {
       colors: {
         background: '#f7f9fb',
         danger: '#ef4444',
-        dangerDark: '#dc2626',
         muted: '#6b7280',
         primary: '#55a4ff',
         primaryDark: '#2a7ed9',
@@ -25,7 +24,6 @@ module.exports = {
         text: '#1a1a1a',
       },
       fontFamily: {
-        meme: ['"Comic Neue"', 'cursive'],
         sans: ['Inter', 'ui-sans-serif', 'system-ui'],
       },
     },
