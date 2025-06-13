@@ -8,7 +8,7 @@ import Animated, {
   useSharedValue,
   runOnJS,
 } from 'react-native-reanimated';
-import {TextElement} from '../../types';
+import {TextElement} from '../../../types';
 
 interface Props {
   element: TextElement;

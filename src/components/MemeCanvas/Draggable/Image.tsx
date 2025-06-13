@@ -7,7 +7,7 @@ import Animated, {
   useSharedValue,
   runOnJS,
 } from 'react-native-reanimated';
-import {ImageElement} from '../../types';
+import {ImageElement} from '../../../types';
 
 interface Props {
   element: ImageElement;
@@ -46,7 +46,7 @@ const DraggableImage: React.FC<Props> = ({element, onUpdate, onSelect}) => {
 
   return (
     <GestureDetector gesture={panGesture}>
-      <Animated.View style={[{position: 'absolute'}, animatedStyle]}>
+      <Animated.View style={[animatedStyle]} className={'absolute'}>
         <Image
           source={{uri: element.uri}}
           style={{

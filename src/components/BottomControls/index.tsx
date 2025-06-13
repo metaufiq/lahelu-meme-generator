@@ -1,5 +1,5 @@
 import React, {FC, useCallback, useEffect} from 'react';
-import {Text, View, TouchableOpacity} from 'react-native';
+import {Text, View} from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Animated, {
@@ -199,19 +199,19 @@ const BottomControls: FC<BottomControlsProps> = ({
       </Animated.View>
 
       {/* Element Controls View */}
-      <Animated.View className="absolute inset-0" style={controlsAnimatedStyle}>
-        {/* Back to tools button */}
-        <View className="px-4 pt-3 pb-2 border-b border-gray-100">
-          <TouchableOpacity
+      <Animated.View
+        className="absolute inset-0 "
+        style={controlsAnimatedStyle}>
+        <View className="flex-row justify-end">
+          <Button
             onPress={onClearSelection}
-            className="flex-row items-center">
-            <MaterialIcons name="arrow-back" size={16} color="#55a4ff" />
-            <Text className="text-primary text-sm font-medium ml-1">
-              Back to Tools
-            </Text>
-          </TouchableOpacity>
+            variant="ghost"
+            size="sm"
+            leftIcon={
+              <MaterialIcons name="close" size={24} color={'#55a4ff'} />
+            }
+          />
         </View>
-
         {selectedElementType === 'text' ? (
           <TextControls
             element={selectedTextElement}

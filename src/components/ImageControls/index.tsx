@@ -55,7 +55,7 @@ const ImageControls: React.FC<Props> = ({
   }
 
   return (
-    <View className="p-4 bg-gray-50 border-t border-gray-200">
+    <View className="p-4">
       {/* Opacity Control */}
       <View className="mb-4">
         <Text className="text-gray-700 text-sm font-medium mb-2">

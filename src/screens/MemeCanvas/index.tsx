@@ -6,7 +6,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {CanvasState} from '../../types';
 import BottomControls from '../../components/BottomControls';
 import {RootStackParamList} from '../../routes/types';
-import MemeCanvas from '../../components/Canvas/MemeCanvas';
+import MemeCanvas from '../../components/MemeCanvas';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MemeCanvas'>;
 

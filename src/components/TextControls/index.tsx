@@ -58,7 +58,7 @@ const TextControls: React.FC<Props> = ({
   }
 
   return (
-    <View className="p-4 bg-gray-50 border-t border-gray-200">
+    <View className="p-4">
       <TextInput
         className="border border-gray-300 p-3 mb-4 bg-white rounded-lg text-base"
         value={element.text}
