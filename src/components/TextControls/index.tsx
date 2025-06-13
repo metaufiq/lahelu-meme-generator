@@ -7,7 +7,7 @@ import {TextElement} from '../../types';
 import {Button} from '../Button';
 
 interface Props {
-  element: TextElement | null;
+  element?: TextElement | null;
   onUpdate: (element: TextElement) => void;
   onDelete: () => void;
   onDuplicate: () => void;

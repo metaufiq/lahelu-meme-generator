@@ -9,6 +9,7 @@ import {CanvasState, ImageElement, TextElement} from '../../types';
 
 import {MemeCanvas} from '../../components/Canvas/MemeCanvas';
 import {TextControls} from '../../components/TextControls';
+import {ImageControls} from '../../components/ImageControls';
 import {RootStackParamList} from '../../routes/types';
 import {Button} from '../../components/Button';
 
@@ -95,6 +96,10 @@ const MemeCanvasScreen: FC<MemeCanvasScreenProps> = ({navigation, route}) => {
     t => t.id === selectedElementId,
   );
 
+  const selectedImageElement = canvasState.imageElements.find(
+    i => i.id === selectedElementId,
+  );
+
   const clearSelection = () => {
     setSelectedElementId(null);
     setSelectedElementType(null);
@@ -141,9 +146,9 @@ const MemeCanvasScreen: FC<MemeCanvasScreenProps> = ({navigation, route}) => {
         />
       </View>
 
-      {/* Combined Bottom Controls */}
+      {/* Bottom Controls */}
       <View className="bg-white border-t border-gray-200">
-        {selectedElementType === 'text' && selectedTextElement ? (
+        {selectedElementId ? (
           // Text Controls
           <View>
             {/* Back to tools button */}
@@ -158,39 +163,81 @@ const MemeCanvasScreen: FC<MemeCanvasScreenProps> = ({navigation, route}) => {
               </TouchableOpacity>
             </View>
 
-            <TextControls
-              element={selectedTextElement}
-              onUpdate={updatedElement => {
-                const updatedTexts = canvasState.textElements.map(t =>
-                  t.id === updatedElement.id ? updatedElement : t,
-                );
-                setCanvasState(prev => ({...prev, textElements: updatedTexts}));
-              }}
-              onDelete={() => {
-                const filteredTexts = canvasState.textElements.filter(
-                  t => t.id !== selectedElementId,
-                );
-                setCanvasState(prev => ({
-                  ...prev,
-                  textElements: filteredTexts,
-                }));
-                clearSelection();
-              }}
-              onDuplicate={() => {
-                if (selectedTextElement) {
-                  const duplicated = {
-                    ...selectedTextElement,
-                    id: Date.now().toString(),
-                    x: selectedTextElement.x + 20,
-                    y: selectedTextElement.y + 20,
-                  };
+            {selectedElementType === 'text' ? (
+              <TextControls
+                element={selectedTextElement}
+                onUpdate={updatedElement => {
+                  const updatedTexts = canvasState.textElements.map(t =>
+                    t.id === updatedElement.id ? updatedElement : t,
+                  );
                   setCanvasState(prev => ({
                     ...prev,
-                    textElements: [...prev.textElements, duplicated],
+                    textElements: updatedTexts,
                   }));
-                }
-              }}
-            />
+                }}
+                onDelete={() => {
+                  const filteredTexts = canvasState.textElements.filter(
+                    t => t.id !== selectedElementId,
+                  );
+                  setCanvasState(prev => ({
+                    ...prev,
+                    textElements: filteredTexts,
+                  }));
+                  clearSelection();
+                }}
+                onDuplicate={() => {
+                  if (selectedTextElement) {
+                    const duplicated = {
+                      ...selectedTextElement,
+                      id: Date.now().toString(),
+                      x: selectedTextElement.x + 20,
+                      y: selectedTextElement.y + 20,
+                    };
+                    setCanvasState(prev => ({
+                      ...prev,
+                      textElements: [...prev.textElements, duplicated],
+                    }));
+                  }
+                }}
+              />
+            ) : (
+              <ImageControls
+                element={selectedImageElement}
+                onUpdate={updatedElement => {
+                  const updatedImages = canvasState.imageElements.map(i =>
+                    i.id === updatedElement.id ? updatedElement : i,
+                  );
+                  setCanvasState(prev => ({
+                    ...prev,
+                    imageElements: updatedImages,
+                  }));
+                }}
+                onDelete={() => {
+                  const filteredImages = canvasState.imageElements.filter(
+                    i => i.id !== selectedElementId,
+                  );
+                  setCanvasState(prev => ({
+                    ...prev,
+                    imageElements: filteredImages,
+                  }));
+                  clearSelection();
+                }}
+                onDuplicate={() => {
+                  if (selectedImageElement) {
+                    const duplicated = {
+                      ...selectedImageElement,
+                      id: Date.now().toString(),
+                      x: selectedImageElement.x + 20,
+                      y: selectedImageElement.y + 20,
+                    };
+                    setCanvasState(prev => ({
+                      ...prev,
+                      imageElements: [...prev.imageElements, duplicated],
+                    }));
+                  }
+                }}
+              />
+            )}
           </View>
         ) : (
           // Add Tools Navigation
