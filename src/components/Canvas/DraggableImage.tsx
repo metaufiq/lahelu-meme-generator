@@ -1,9 +1,8 @@
 // src/components/Canvas/DraggableImage.tsx
 import React from 'react';
 import {Image} from 'react-native';
-import {PanGestureHandler} from 'react-native-gesture-handler';
+import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import Animated, {
-  useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
   runOnJS,
@@ -24,22 +23,21 @@ export const DraggableImage: React.FC<Props> = ({
   const translateX = useSharedValue(element.x);
   const translateY = useSharedValue(element.y);
 
-  const gestureHandler = useAnimatedGestureHandler({
-    onStart: () => {
+  const panGesture = Gesture.Pan()
+    .onStart(() => {
       runOnJS(onSelect)();
-    },
-    onActive: event => {
-      translateX.value = element.x + event.translationX;
-      translateY.value = element.y + event.translationY;
-    },
-    onEnd: () => {
+    })
+    .onUpdate(e => {
+      translateX.value = element.x + e.translationX;
+      translateY.value = element.y + e.translationY;
+    })
+    .onEnd(() => {
       runOnJS(onUpdate)({
         ...element,
         x: translateX.value,
         y: translateY.value,
       });
-    },
-  });
+    });
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
@@ -51,7 +49,7 @@ export const DraggableImage: React.FC<Props> = ({
   }));
 
   return (
-    <PanGestureHandler onGestureEvent={gestureHandler}>
+    <GestureDetector gesture={panGesture}>
       <Animated.View style={[{position: 'absolute'}, animatedStyle]}>
         <Image
           source={{uri: element.uri}}
@@ -63,6 +61,6 @@ export const DraggableImage: React.FC<Props> = ({
           resizeMode="contain"
         />
       </Animated.View>
-    </PanGestureHandler>
+    </GestureDetector>
   );
 };

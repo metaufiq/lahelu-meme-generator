@@ -19,7 +19,7 @@ import {
 } from './src/types';
 
 const App: React.FC = () => {
-  const [showTemplates, setShowTemplates] = useState(true);
+  const [showTemplates, setShowTemplates] = useState(false); // Changed from true to false
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
     null,
   );
@@ -94,6 +94,13 @@ const App: React.FC = () => {
   if (showTemplates) {
     return (
       <SafeAreaView style={styles.container}>
+        <View style={styles.templateHeader}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => setShowTemplates(false)}>
+            <Text style={styles.backButtonText}>← Back to Canvas</Text>
+          </TouchableOpacity>
+        </View>
         <Text style={styles.title}>Choose a Meme Template</Text>
         <TemplateGrid onSelectTemplate={handleSelectTemplate} />
       </SafeAreaView>
@@ -188,6 +195,21 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   headerButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  templateHeader: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  backButton: {
+    padding: 10,
+    backgroundColor: '#6c757d',
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+  },
+  backButtonText: {
     color: 'white',
     fontWeight: 'bold',
   },

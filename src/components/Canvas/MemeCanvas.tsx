@@ -2,12 +2,11 @@
 import React from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {
+  Gesture,
+  GestureDetector,
   GestureHandlerRootView,
-  PanGestureHandler,
-  PinchGestureHandler,
 } from 'react-native-gesture-handler';
 import Animated, {
-  useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -31,33 +30,34 @@ export const MemeCanvas: React.FC<Props> = ({
   const scale = useSharedValue(1);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
+  const savedTranslateX = useSharedValue(0);
+  const savedTranslateY = useSharedValue(0);
   const focalX = useSharedValue(0);
   const focalY = useSharedValue(0);
 
-  const panGestureHandler = useAnimatedGestureHandler({
-    onStart: () => {},
-    onActive: event => {
-      translateX.value = event.translationX;
-      translateY.value = event.translationY;
-    },
-    onEnd: () => {
-      translateX.value = withSpring(0);
-      translateY.value = withSpring(0);
-    },
-  });
-
-  const pinchGestureHandler = useAnimatedGestureHandler({
-    onStart: event => {
+  const pinchGesture = Gesture.Pinch()
+    .onStart(event => {
       focalX.value = event.focalX;
       focalY.value = event.focalY;
-    },
-    onActive: event => {
+    })
+    .onUpdate(event => {
       scale.value = event.scale;
-    },
-    onEnd: () => {
+    })
+    .onEnd(() => {
       scale.value = withSpring(Math.max(0.5, Math.min(scale.value, 3)));
-    },
-  });
+    });
+
+  const panGesture = Gesture.Pan()
+    .onStart(() => {
+      savedTranslateX.value = translateX.value;
+      savedTranslateY.value = translateY.value;
+    })
+    .onUpdate(e => {
+      translateX.value = savedTranslateX.value + e.translationX;
+      translateY.value = savedTranslateY.value + e.translationY;
+    });
+
+  const composedGesture = Gesture.Simultaneous(pinchGesture, panGesture);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
@@ -78,52 +78,48 @@ export const MemeCanvas: React.FC<Props> = ({
   return (
     <View style={styles.container}>
       <GestureHandlerRootView>
-        <PanGestureHandler onGestureEvent={panGestureHandler}>
-          <Animated.View>
-            <PinchGestureHandler onGestureEvent={pinchGestureHandler}>
-              <Animated.View style={[styles.canvas, animatedStyle]}>
-                <Svg
-                  width={canvasState.template.width}
-                  height={canvasState.template.height}
-                  viewBox={`0 0 ${canvasState.template.width} ${canvasState.template.height}`}>
-                  <SvgImage
-                    href={canvasState.template.url}
-                    width={canvasState.template.width}
-                    height={canvasState.template.height}
-                  />
-                </Svg>
+        <GestureDetector gesture={composedGesture}>
+          <Animated.View style={[styles.canvas, animatedStyle]}>
+            <Svg
+              width={canvasState.template.width}
+              height={canvasState.template.height}
+              viewBox={`0 0 ${canvasState.template.width} ${canvasState.template.height}`}>
+              <SvgImage
+                href={canvasState.template.url}
+                width={canvasState.template.width}
+                height={canvasState.template.height}
+              />
+            </Svg>
 
-                {canvasState.textElements.map(textElement => (
-                  <DraggableText
-                    key={textElement.id}
-                    element={textElement}
-                    onUpdate={updatedElement => {
-                      const updatedTexts = canvasState.textElements.map(t =>
-                        t.id === updatedElement.id ? updatedElement : t,
-                      );
-                      onUpdateCanvas({textElements: updatedTexts});
-                    }}
-                    onSelect={() => onSelectElement(textElement.id, 'text')}
-                  />
-                ))}
+            {canvasState.textElements.map(textElement => (
+              <DraggableText
+                key={textElement.id}
+                element={textElement}
+                onUpdate={updatedElement => {
+                  const updatedTexts = canvasState.textElements.map(t =>
+                    t.id === updatedElement.id ? updatedElement : t,
+                  );
+                  onUpdateCanvas({textElements: updatedTexts});
+                }}
+                onSelect={() => onSelectElement(textElement.id, 'text')}
+              />
+            ))}
 
-                {canvasState.imageElements.map(imageElement => (
-                  <DraggableImage
-                    key={imageElement.id}
-                    element={imageElement}
-                    onUpdate={updatedElement => {
-                      const updatedImages = canvasState.imageElements.map(i =>
-                        i.id === updatedElement.id ? updatedElement : i,
-                      );
-                      onUpdateCanvas({imageElements: updatedImages});
-                    }}
-                    onSelect={() => onSelectElement(imageElement.id, 'image')}
-                  />
-                ))}
-              </Animated.View>
-            </PinchGestureHandler>
+            {canvasState.imageElements.map(imageElement => (
+              <DraggableImage
+                key={imageElement.id}
+                element={imageElement}
+                onUpdate={updatedElement => {
+                  const updatedImages = canvasState.imageElements.map(i =>
+                    i.id === updatedElement.id ? updatedElement : i,
+                  );
+                  onUpdateCanvas({imageElements: updatedImages});
+                }}
+                onSelect={() => onSelectElement(imageElement.id, 'image')}
+              />
+            ))}
           </Animated.View>
-        </PanGestureHandler>
+        </GestureDetector>
       </GestureHandlerRootView>
     </View>
   );
