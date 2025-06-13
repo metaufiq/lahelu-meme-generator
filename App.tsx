@@ -1,13 +1,9 @@
 // App.tsx
 import React, {useState} from 'react';
-import {
-  SafeAreaView,
-  View,
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-} from 'react-native';
+import {SafeAreaView, View, Text, StyleSheet} from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
+
+import './global.css';
 import {MemeCanvas} from './src/components/Canvas/MemeCanvas';
 import {TemplateGrid} from './src/components/TemplateSelector/TemplateGrid';
 import {TextControls} from './src/components/Controls/TextControls';
@@ -17,6 +13,7 @@ import {
   ImageElement,
   MemeTemplate,
 } from './src/types';
+import {Button} from './src/components/Button';
 
 const App: React.FC = () => {
   const [showTemplates, setShowTemplates] = useState(false); // Changed from true to false
@@ -95,11 +92,9 @@ const App: React.FC = () => {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.templateHeader}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => setShowTemplates(false)}>
+          <Button onPress={() => setShowTemplates(false)}>
             <Text style={styles.backButtonText}>← Back to Canvas</Text>
-          </TouchableOpacity>
+          </Button>
         </View>
         <Text style={styles.title}>Choose a Meme Template</Text>
         <TemplateGrid onSelectTemplate={handleSelectTemplate} />
@@ -110,17 +105,15 @@ const App: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.headerButton}
-          onPress={() => setShowTemplates(true)}>
+        <Button onPress={() => setShowTemplates(true)}>
           <Text style={styles.headerButtonText}>Templates</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.headerButton} onPress={addText}>
+        </Button>
+        <Button onPress={addText}>
           <Text style={styles.headerButtonText}>Add Text</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.headerButton} onPress={addImage}>
+        </Button>
+        <Button onPress={addImage}>
           <Text style={styles.headerButtonText}>Add Image</Text>
-        </TouchableOpacity>
+        </Button>
       </View>
 
       <MemeCanvas
