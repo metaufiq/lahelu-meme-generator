@@ -1,4 +1,3 @@
-// src/types/index.ts
 export interface MemeTemplate {
   id: string;
   name: string;

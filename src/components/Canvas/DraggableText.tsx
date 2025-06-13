@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 // src/components/Canvas/DraggableText.tsx
 import React from 'react';
 import {Text} from 'react-native';
@@ -57,9 +58,6 @@ export const DraggableText: React.FC<Props> = ({
             color: element.color,
             fontFamily: element.fontFamily,
             fontWeight: 'bold',
-            textShadowColor: 'rgba(0, 0, 0, 0.75)',
-            textShadowOffset: {width: 2, height: 2},
-            textShadowRadius: 10,
           }}>
           {element.text}
         </Text>
