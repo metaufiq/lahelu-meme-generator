@@ -1,5 +1,5 @@
 // src/components/Controls/ImageControls.tsx
-import React from 'react';
+import React, {useCallback} from 'react';
 import {View, Text} from 'react-native';
 import Slider from '@react-native-community/slider';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -19,24 +19,26 @@ const ImageControls: React.FC<Props> = ({
   onUpdateCanvas,
   onClearSelection,
 }) => {
-  if (!element) {
-    return null;
-  }
+  const handleUpdate = useCallback(
+    (updatedElement: ImageElement) => {
+      const updatedImages = imageElements.map(i =>
+        i.id === updatedElement.id ? updatedElement : i,
+      );
+      onUpdateCanvas({imageElements: updatedImages});
+    },
+    [imageElements, onUpdateCanvas],
+  );
 
-  const handleUpdate = (updatedElement: ImageElement) => {
-    const updatedImages = imageElements.map(i =>
-      i.id === updatedElement.id ? updatedElement : i,
-    );
-    onUpdateCanvas({imageElements: updatedImages});
-  };
-
-  const handleDelete = () => {
-    const filteredImages = imageElements.filter(i => i.id !== element.id);
+  const handleDelete = useCallback(() => {
+    const filteredImages = imageElements.filter(i => i.id !== element?.id);
     onUpdateCanvas({imageElements: filteredImages});
     onClearSelection();
-  };
+  }, [element?.id, imageElements, onClearSelection, onUpdateCanvas]);
 
-  const handleDuplicate = () => {
+  const handleDuplicate = useCallback(() => {
+    if (!element) {
+      return;
+    }
     const duplicated = {
       ...element,
       id: Date.now().toString(),
@@ -46,7 +48,11 @@ const ImageControls: React.FC<Props> = ({
     onUpdateCanvas({
       imageElements: [...imageElements, duplicated],
     });
-  };
+  }, [element, imageElements, onUpdateCanvas]);
+
+  if (!element) {
+    return null;
+  }
 
   return (
     <View className="p-4 bg-gray-50 border-t border-gray-200">

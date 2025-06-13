@@ -1,13 +1,12 @@
 import {FC, useCallback, useEffect, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Text, View, TouchableOpacity} from 'react-native';
-
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {CanvasState} from '../../types';
 
-import {MemeCanvas} from '../../components/Canvas/MemeCanvas';
+import {CanvasState} from '../../types';
 import BottomControls from '../../components/BottomControls';
 import {RootStackParamList} from '../../routes/types';
+import MemeCanvas from '../../components/Canvas/MemeCanvas';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MemeCanvas'>;
 

@@ -3,7 +3,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {MemeTemplate} from '../../types';
-import {TemplateGrid} from '../../components/TemplateSelector/TemplateGrid';
+import TemplateGrid from '../../components/TemplateGrid';
 import {RootStackParamList} from '../../routes/types';
 import styles from './styles';
 

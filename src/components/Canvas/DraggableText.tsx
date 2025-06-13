@@ -16,11 +16,7 @@ interface Props {
   onSelect: () => void;
 }
 
-export const DraggableText: React.FC<Props> = ({
-  element,
-  onUpdate,
-  onSelect,
-}) => {
+const DraggableText: React.FC<Props> = ({element, onUpdate, onSelect}) => {
   const translateX = useSharedValue(element.x);
   const translateY = useSharedValue(element.y);
 
@@ -65,3 +61,5 @@ export const DraggableText: React.FC<Props> = ({
     </GestureDetector>
   );
 };
+
+export default DraggableText;

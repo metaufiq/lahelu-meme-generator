@@ -1,5 +1,5 @@
 // src/components/Controls/TextControls.tsx
-import React from 'react';
+import React, {useCallback} from 'react';
 import {View, Text, TextInput, TouchableOpacity} from 'react-native';
 import Slider from '@react-native-community/slider';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -19,24 +19,29 @@ const TextControls: React.FC<Props> = ({
   onUpdateCanvas,
   onClearSelection,
 }) => {
-  if (!element) {
-    return null;
-  }
+  const handleUpdate = useCallback(
+    (updatedElement: TextElement) => {
+      const updatedTexts = textElements.map(t =>
+        t.id === updatedElement.id ? updatedElement : t,
+      );
+      onUpdateCanvas({textElements: updatedTexts});
+    },
+    [onUpdateCanvas, textElements],
+  );
 
-  const handleUpdate = (updatedElement: TextElement) => {
-    const updatedTexts = textElements.map(t =>
-      t.id === updatedElement.id ? updatedElement : t,
-    );
-    onUpdateCanvas({textElements: updatedTexts});
-  };
-
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
+    if (!element) {
+      return;
+    }
     const filteredTexts = textElements.filter(t => t.id !== element.id);
     onUpdateCanvas({textElements: filteredTexts});
     onClearSelection();
-  };
+  }, [element, onClearSelection, onUpdateCanvas, textElements]);
 
-  const handleDuplicate = () => {
+  const handleDuplicate = useCallback(() => {
+    if (!element) {
+      return;
+    }
     const duplicated = {
       ...element,
       id: Date.now().toString(),
@@ -46,7 +51,11 @@ const TextControls: React.FC<Props> = ({
     onUpdateCanvas({
       textElements: [...textElements, duplicated],
     });
-  };
+  }, [element, onUpdateCanvas, textElements]);
+
+  if (!element) {
+    return null;
+  }
 
   return (
     <View className="p-4 bg-gray-50 border-t border-gray-200">

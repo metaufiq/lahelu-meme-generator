@@ -13,8 +13,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import Svg, {Image as SvgImage} from 'react-native-svg';
 import {CanvasState} from '../../types';
-import {DraggableText} from './DraggableText';
-import {DraggableImage} from './DraggableImage';
+import DraggableText from './DraggableText';
+import DraggableImage from './DraggableImage';
 
 interface Props {
   canvasState: CanvasState;
@@ -22,7 +22,7 @@ interface Props {
   onSelectElement: (id: string, type: 'text' | 'image') => void;
 }
 
-export const MemeCanvas: React.FC<Props> = ({
+const MemeCanvas: React.FC<Props> = ({
   canvasState,
   onUpdateCanvas,
   onSelectElement,
@@ -146,3 +146,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+export default MemeCanvas;

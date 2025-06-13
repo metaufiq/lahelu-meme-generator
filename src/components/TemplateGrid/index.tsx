@@ -14,7 +14,7 @@ interface Props {
   onSelectTemplate: (template: MemeTemplate) => void;
 }
 
-export const TemplateGrid: React.FC<Props> = ({onSelectTemplate}) => {
+const TemplateGrid: React.FC<Props> = ({onSelectTemplate}) => {
   const renderTemplate = ({item}: {item: MemeTemplate}) => (
     <TouchableOpacity
       style={styles.templateItem}
@@ -55,3 +55,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+export default TemplateGrid;

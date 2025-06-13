@@ -1,4 +1,4 @@
-import React, {FC, useEffect} from 'react';
+import React, {FC, useCallback, useEffect} from 'react';
 import {Text, View, TouchableOpacity} from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -81,7 +81,7 @@ const BottomControls: FC<BottomControlsProps> = ({
     selectedElementType,
   ]);
 
-  const addText = () => {
+  const addText = useCallback(() => {
     buttonScale1.value = withSpring(0.9, {damping: 10}, () => {
       buttonScale1.value = withSpring(1, {damping: 8});
     });
@@ -101,9 +101,9 @@ const BottomControls: FC<BottomControlsProps> = ({
     onUpdateCanvas({
       textElements: [...canvasState.textElements, newText],
     });
-  };
+  }, [buttonScale1, canvasState.textElements, onUpdateCanvas]);
 
-  const addImage = () => {
+  const addImage = useCallback(() => {
     buttonScale2.value = withSpring(0.9, {damping: 10}, () => {
       buttonScale2.value = withSpring(1, {damping: 8});
     });
@@ -128,7 +128,7 @@ const BottomControls: FC<BottomControlsProps> = ({
         });
       }
     });
-  };
+  }, [buttonScale2, canvasState.imageElements, onUpdateCanvas]);
 
   const selectedTextElement = canvasState.textElements.find(
     t => t.id === selectedElementId,
