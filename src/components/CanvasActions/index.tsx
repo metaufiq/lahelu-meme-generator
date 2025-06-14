@@ -94,7 +94,7 @@ const CanvasActions: FC<Props> = ({
     if (selectedElementId) {
       // Switch to controls view
       bottomBarHeight.value = withSpring(
-        selectedElementType === 'text' ? 240 : 350,
+        selectedElementType === 'text' ? 190 : 310, // Reduced height since we removed actions
         {damping: 15, stiffness: 100},
       );
       addElementsOpacity.value = withTiming(0, {duration: 200});
@@ -196,6 +196,70 @@ const CanvasActions: FC<Props> = ({
     getCenterPosition,
   ]);
 
+  const handleDuplicate = useCallback(() => {
+    if (!selectedElementId || !selectedElementType) {
+      return;
+    }
+
+    if (selectedElementType === 'text') {
+      const element = canvasState.textElements.find(
+        t => t.id === selectedElementId,
+      );
+      if (element) {
+        const duplicated = {
+          ...element,
+          id: Date.now().toString(),
+          x: element.x + 20,
+          y: element.y + 20,
+        };
+        onUpdateCanvas({
+          textElements: [...canvasState.textElements, duplicated],
+        });
+      }
+    } else if (selectedElementType === 'image') {
+      const element = canvasState.imageElements.find(
+        i => i.id === selectedElementId,
+      );
+      if (element) {
+        const duplicated = {
+          ...element,
+          id: Date.now().toString(),
+          x: element.x + 20,
+          y: element.y + 20,
+        };
+        onUpdateCanvas({
+          imageElements: [...canvasState.imageElements, duplicated],
+        });
+      }
+    }
+  }, [selectedElementId, selectedElementType, canvasState, onUpdateCanvas]);
+
+  const handleDelete = useCallback(() => {
+    if (!selectedElementId || !selectedElementType) {
+      return;
+    }
+
+    if (selectedElementType === 'text') {
+      const filteredTexts = canvasState.textElements.filter(
+        t => t.id !== selectedElementId,
+      );
+      onUpdateCanvas({textElements: filteredTexts});
+    } else if (selectedElementType === 'image') {
+      const filteredImages = canvasState.imageElements.filter(
+        i => i.id !== selectedElementId,
+      );
+      onUpdateCanvas({imageElements: filteredImages});
+    }
+
+    onClearSelection();
+  }, [
+    selectedElementId,
+    selectedElementType,
+    canvasState,
+    onUpdateCanvas,
+    onClearSelection,
+  ]);
+
   const selectedTextElement = canvasState.textElements.find(
     t => t.id === selectedElementId,
   );
@@ -290,15 +354,36 @@ const CanvasActions: FC<Props> = ({
       <Animated.View style={[styles.controlsContainer, controlsAnimatedStyle]}>
         <View style={styles.controlsHeader}>
           <Button
-            onPress={onClearSelection}
+            onPress={handleDelete}
             variant="ghost"
             size="sm"
             leftIcon={
               <MaterialIcons
-                name="close"
-                size={24}
-                color={getColor('primary')}
+                name="delete"
+                size={20}
+                color={getColor('danger')}
               />
+            }
+          />
+          <Button
+            onPress={handleDuplicate}
+            variant="ghost"
+            size="sm"
+            leftIcon={
+              <MaterialIcons
+                name="content-copy"
+                size={20}
+                color={getColor('muted')}
+              />
+            }
+          />
+          {/* Close Button */}
+          <Button
+            onPress={onClearSelection}
+            variant="ghost"
+            size="sm"
+            leftIcon={
+              <MaterialIcons name="close" size={24} color={getColor('muted')} />
             }
           />
         </View>
@@ -307,14 +392,12 @@ const CanvasActions: FC<Props> = ({
             element={selectedTextElement}
             textElements={canvasState.textElements}
             onUpdateCanvas={onUpdateCanvas}
-            onClearSelection={onClearSelection}
           />
         ) : (
           <ImageActions
             element={selectedImageElement}
             imageElements={canvasState.imageElements}
             onUpdateCanvas={onUpdateCanvas}
-            onClearSelection={onClearSelection}
           />
         )}
       </Animated.View>

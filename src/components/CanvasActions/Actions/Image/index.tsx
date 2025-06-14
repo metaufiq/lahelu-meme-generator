@@ -1,23 +1,19 @@
 import React, {useCallback} from 'react';
 import {View, Text} from 'react-native';
 import Slider from '@react-native-community/slider';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {ImageElement, CanvasState} from '../../../../types';
-import {Button} from '../../../Button';
 import useStyles from './styles';
 
 interface Props {
   element?: ImageElement | null;
   imageElements: ImageElement[];
   onUpdateCanvas: (updates: Partial<CanvasState>) => void;
-  onClearSelection: () => void;
 }
 
 const ImageActions: React.FC<Props> = ({
   element,
   imageElements,
   onUpdateCanvas,
-  onClearSelection,
 }) => {
   const {styles, sliderColors} = useStyles();
 
@@ -30,27 +26,6 @@ const ImageActions: React.FC<Props> = ({
     },
     [imageElements, onUpdateCanvas],
   );
-
-  const handleDelete = useCallback(() => {
-    const filteredImages = imageElements.filter(i => i.id !== element?.id);
-    onUpdateCanvas({imageElements: filteredImages});
-    onClearSelection();
-  }, [element?.id, imageElements, onClearSelection, onUpdateCanvas]);
-
-  const handleDuplicate = useCallback(() => {
-    if (!element) {
-      return;
-    }
-    const duplicated = {
-      ...element,
-      id: Date.now().toString(),
-      x: element.x + 20,
-      y: element.y + 20,
-    };
-    onUpdateCanvas({
-      imageElements: [...imageElements, duplicated],
-    });
-  }, [element, imageElements, onUpdateCanvas]);
 
   if (!element) {
     return null;
@@ -106,23 +81,6 @@ const ImageActions: React.FC<Props> = ({
           minimumTrackTintColor={sliderColors.minimumTrackTintColor}
           maximumTrackTintColor={sliderColors.maximumTrackTintColor}
           thumbTintColor={sliderColors.thumbTintColor}
-        />
-      </View>
-
-      {/* Action Buttons */}
-      <View style={styles.buttonContainer}>
-        <Button
-          onPress={handleDuplicate}
-          title="Duplicate"
-          leftIcon={
-            <MaterialIcons name="content-copy" size={16} color="white" />
-          }
-        />
-        <Button
-          onPress={handleDelete}
-          variant="danger"
-          leftIcon={<MaterialIcons name="delete" size={16} color="white" />}
-          title="Delete"
         />
       </View>
     </View>

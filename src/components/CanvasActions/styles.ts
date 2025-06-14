@@ -1,4 +1,3 @@
-
 import { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import useThemeStore from '../../stores/theme';
@@ -49,6 +48,14 @@ const useStyles = () => {
     controlsHeader: {
       flexDirection: 'row',
       justifyContent: 'flex-end',
+      alignItems: 'center',
+      paddingHorizontal: getSpacing(2),
+      paddingVertical: getSpacing(2),
+    },
+
+    headerActionsContainer: {
+      flexDirection: 'row',
+      gap: getSpacing(1),
     },
 
     // Action button styles
