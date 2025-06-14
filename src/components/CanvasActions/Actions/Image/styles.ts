@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
-import { useThemeStore } from '../../../../stores/theme';
+import useThemeStore from '../../../../stores/theme';
 
 const useStyles = () => {
   const theme = useThemeStore((state) => state.theme);

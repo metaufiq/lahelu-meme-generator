@@ -14,7 +14,7 @@ import {CanvasState, ImageElement, TextElement} from '../../types';
 import {Button} from '../Button';
 import ImageActions from './Actions/Image';
 import TextActions from './Actions/Text';
-import {useThemeStore} from '../../stores/theme';
+import useThemeStore from '../../stores/theme';
 import useStyles from './styles';
 
 interface Props {

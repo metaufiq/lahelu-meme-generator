@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { StyleSheet, ViewStyle } from 'react-native';
 
-import { useThemeStore } from '../../stores/theme';
+import useThemeStore from '../../stores/theme';
 import { Props } from '.';
 
 interface Params {

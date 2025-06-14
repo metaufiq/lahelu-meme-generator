@@ -1,5 +1,97 @@
 import { create } from 'zustand';
-import { Platform, TextStyle } from 'react-native';
+import { Platform } from 'react-native';
+
+const themeSpacing = {
+  0: 0,
+  0.5: 2,
+  1: 4,
+  1.5: 6,
+  2: 8,
+  2.5: 10,
+  3: 12,
+  3.5: 14,
+  4: 16,
+  5: 20,
+  6: 24,
+  7: 28,
+  8: 32,
+  9: 36,
+  10: 40,
+  11: 44,
+  12: 48,
+  14: 56,
+  16: 64,
+  20: 80,
+  24: 96,
+  28: 112,
+  32: 128,
+} as const;
+
+const themeBorderRadius = {
+  none: 0,
+  xs: 2,
+  sm: 4,
+  md: 6,
+  lg: 8,
+  xl: 12,
+  button: 8,
+  input: 8,
+  card: 12,
+  circle: 9999,
+  actionIcon: 12,
+} as const;
+
+const themeFontSizes = {
+  xs: 12,
+  sm: 14,
+  md: 16,
+  lg: 18,
+  xl: 20,
+  '2xl': 24,
+  '3xl': 30,
+  '4xl': 36,
+} as const;
+
+const themeLineHeights = {
+  xs: 16,
+  sm: 20,
+  md: 24,
+  lg: 28,
+  xl: 32,
+  '2xl': 36,
+  '3xl': 40,
+  '4xl': 44,
+} as const;
+
+const themeFontWeights = {
+  normal: '400',
+  medium: '500',
+  semibold: '600',
+  bold: '700',
+} as const;
+
+const themeDimensions = {
+  actionIcon: 48,
+  actionIconContainer: 24,
+  buttonHeight: 44,
+  inputHeight: 44,
+  tabBarHeight: 60,
+  headerHeight: 56,
+} as const;
+
+const themeMinWidth = {
+  iconButton: 80,
+  button: 120,
+} as const;
+
+
+export type ThemeSpacing = typeof themeSpacing;
+export type ThemeBorderRadius = typeof themeBorderRadius;
+export type ThemeFontSizes = typeof themeFontSizes;
+export type ThemeLineHeights = typeof themeLineHeights;
+export type ThemeFontWeights = typeof themeFontWeights;
+export type ThemeDimensions = typeof themeDimensions;
+export type ThemeMinWidth = typeof themeMinWidth;
 
 export interface ThemeColors {
   background: string;
@@ -19,8 +111,8 @@ export interface ThemeColors {
   text: string;
   textSecondary: string;
   textMuted: string;
-  surface: string; // For cards, inputs, etc.
-  surfaceSecondary: string; // Secondary surface color
+  surface: string;
+  surfaceSecondary: string;
   placeholderText: string;
   white: string;
   black: string;
@@ -34,46 +126,6 @@ export interface ThemeColors {
   gray700: string;
   gray800: string;
   gray900: string;
-}
-
-export interface ThemeSpacing {
-  0: 0;
-  0.5: 2;
-  1: 4;
-  1.5: 6;
-  2: 8;
-  2.5: 10;
-  3: 12;
-  3.5: 14;
-  4: 16;
-  5: 20;
-  6: 24;
-  7: 28;
-  8: 32;
-  9: 36;
-  10: 40;
-  11: 44;
-  12: 48;
-  14: 56;
-  16: 64;
-  20: 80;
-  24: 96;
-  28: 112;
-  32: 128;
-}
-
-export interface ThemeBorderRadius {
-  none: 0;
-  xs: 2;
-  sm: 4;
-  md: 6;
-  lg: 8;
-  xl: 12;
-  button: 8;
-  input: 8;
-  card: 12;
-  circle: 9999;
-  actionIcon: 12; // For action icon containers
 }
 
 export interface ThemeShadows {
@@ -104,70 +156,27 @@ export interface ThemeShadows {
     shadowOffset: { width: number; height: number };
     shadowOpacity: number;
     shadowRadius: number;
-    elevation: number; // Android
+    elevation: number;
   };
   buttonPressed: {
     shadowColor: string;
     shadowOffset: { width: number; height: number };
     shadowOpacity: number;
     shadowRadius: number;
-    elevation: number; // Android
+    elevation: number;
   };
   card: {
     shadowColor: string;
     shadowOffset: { width: number; height: number };
     shadowOpacity: number;
     shadowRadius: number;
-    elevation: number; // Android
+    elevation: number;
   };
-}
-
-export interface ThemeFontSizes {
-  xs: number;
-  sm: number;
-  md: number;
-  lg: number;
-  xl: number;
-  '2xl': number;
-  '3xl': number;
-  '4xl': number;
-}
-
-export interface ThemeLineHeights {
-  xs: number;
-  sm: number;
-  md: number;
-  lg: number;
-  xl: number;
-  '2xl': number;
-  '3xl': number;
-  '4xl': number;
-}
-
-export interface ThemeFontWeights {
-  normal: '400';
-  medium: '500';
-  semibold: '600';
-  bold: '700';
 }
 
 export interface ThemeFontFamily {
   sans: string[];
   mono: string[];
-}
-
-export interface ThemeMinWidth {
-  iconButton: number;
-  button: number;
-}
-
-export interface ThemeDimensions {
-  actionIcon: number; // Size for action icon containers
-  actionIconContainer: number;
-  buttonHeight: number;
-  inputHeight: number;
-  tabBarHeight: number;
-  headerHeight: number;
 }
 
 export interface Theme {
@@ -190,10 +199,10 @@ export interface ThemeState {
   getSpacing: (spacingKey: keyof ThemeSpacing) => number;
   getBorderRadius: (radiusKey: keyof ThemeBorderRadius) => number;
   getShadow: (shadowKey: keyof ThemeShadows) => ThemeShadows[typeof shadowKey];
-  getFontSize: (sizeKey: keyof ThemeFontSizes) => number;
-  getLineHeight: (lineHeightKey: keyof ThemeLineHeights) => number;
-  getFontWeight: (weightKey: keyof ThemeFontWeights) => TextStyle['fontWeight'];
-  getDimension: (dimensionKey: keyof ThemeDimensions) => number;
+  getFontSize: (sizeKey: keyof ThemeFontSizes) => ThemeFontSizes[typeof sizeKey];
+  getLineHeight: (lineHeightKey: keyof ThemeLineHeights) => ThemeLineHeights[typeof lineHeightKey];
+  getFontWeight: (weightKey: keyof ThemeFontWeights) => ThemeFontWeights[typeof weightKey];
+  getDimension: (dimensionKey: keyof ThemeDimensions) => ThemeDimensions[typeof dimensionKey];
 }
 
 const defaultTheme: Theme = {
@@ -231,44 +240,8 @@ const defaultTheme: Theme = {
     gray800: '#1f2937',
     gray900: '#111827',
   },
-  spacing: {
-    0: 0,
-    0.5: 2,
-    1: 4,
-    1.5: 6,
-    2: 8,
-    2.5: 10,
-    3: 12,
-    3.5: 14,
-    4: 16,
-    5: 20,
-    6: 24,
-    7: 28,
-    8: 32,
-    9: 36,
-    10: 40,
-    11: 44,
-    12: 48,
-    14: 56,
-    16: 64,
-    20: 80,
-    24: 96,
-    28: 112,
-    32: 128,
-  },
-  borderRadius: {
-    none: 0,
-    xs: 2,
-    sm: 4,
-    md: 6,
-    lg: 8,
-    xl: 12,
-    button: 8,
-    input: 8,
-    card: 12,
-    circle: 9999,
-    actionIcon: 12,
-  },
+  spacing: themeSpacing,
+  borderRadius: themeBorderRadius,
   shadows: {
     none: {},
     sm: {
@@ -314,32 +287,9 @@ const defaultTheme: Theme = {
       elevation: 2,
     },
   },
-  fontSizes: {
-    xs: 12,
-    sm: 14,
-    md: 16,
-    lg: 18,
-    xl: 20,
-    '2xl': 24,
-    '3xl': 30,
-    '4xl': 36,
-  },
-  lineHeights: {
-    xs: 16,
-    sm: 20,
-    md: 24,
-    lg: 28,
-    xl: 32,
-    '2xl': 36,
-    '3xl': 40,
-    '4xl': 44,
-  },
-  fontWeights: {
-    normal: '400',
-    medium: '500',
-    semibold: '600',
-    bold: '700',
-  },
+  fontSizes: themeFontSizes,
+  lineHeights: themeLineHeights,
+  fontWeights: themeFontWeights,
   fontFamily: {
     sans: Platform.select({
       ios: ['Inter', 'System'],
@@ -352,22 +302,12 @@ const defaultTheme: Theme = {
       default: ['monospace'],
     }) as string[],
   },
-  minWidth: {
-    iconButton: 80,
-    button: 120,
-  },
-  dimensions: {
-    actionIcon: 48,
-    actionIconContainer: 24,
-    buttonHeight: 44,
-    inputHeight: 44,
-    tabBarHeight: 60,
-    headerHeight: 56,
-  },
+  minWidth: themeMinWidth,
+  dimensions: themeDimensions,
 };
 
-// Create the Zustand store
-export const useThemeStore = create<ThemeState>((set, get) => ({
+
+const useThemeStore = create<ThemeState>((set, get) => ({
   theme: defaultTheme,
   setTheme: (newTheme) =>
     set((state) => ({
@@ -409,3 +349,5 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
     return theme.dimensions[dimensionKey];
   },
 }));
+
+export default useThemeStore;

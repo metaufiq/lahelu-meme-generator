@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
-import { useThemeStore } from '../../stores/theme';
+import useThemeStore from '../../stores/theme';
 
 const useStyles = () => {
   const {
@@ -10,7 +10,7 @@ const useStyles = () => {
     getBorderRadius,
     getColor,
     getShadow,
-    getFontWeight
+    getFontWeight,
   } = useThemeStore();
 
   const styles = useMemo(() => StyleSheet.create({
