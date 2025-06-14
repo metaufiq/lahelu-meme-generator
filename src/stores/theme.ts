@@ -1,4 +1,3 @@
-// stores/theme.ts
 import { create } from 'zustand';
 import { Platform } from 'react-native';
 
@@ -14,6 +13,8 @@ export interface ThemeColors {
   textSecondary: string;
   surface: string; // For cards, inputs, etc.
   placeholderText: string;
+  white: string;
+  gray200: string;
 }
 
 export interface ThemeSpacing {
@@ -34,6 +35,7 @@ export interface ThemeBorderRadius {
   input: number;
   card: number;
   circle: number;
+  actionIcon: number; // For action icon containers
 }
 
 export interface ThemeShadows {
@@ -77,6 +79,11 @@ export interface ThemeMinWidth {
   iconButton: number;
 }
 
+export interface ThemeDimensions {
+  actionIcon: number; // Size for action icon containers
+  actionIconContainer: number;
+}
+
 export interface Theme {
   colors: ThemeColors;
   spacing: ThemeSpacing;
@@ -85,6 +92,7 @@ export interface Theme {
   fontSizes: ThemeFontSizes;
   fontFamily: ThemeFontFamily;
   minWidth: ThemeMinWidth;
+  dimensions: ThemeDimensions;
 }
 
 export interface ThemeState {
@@ -93,8 +101,9 @@ export interface ThemeState {
   getColor: (colorKey: keyof ThemeColors) => string;
   getSpacing: (spacingKey: keyof ThemeSpacing | number) => number;
   getBorderRadius: (radiusKey: keyof ThemeBorderRadius) => number;
-  getShadow: (shadowKey: keyof ThemeShadows) => ThemeShadows[keyof ThemeShadows];
+  getShadow: (shadowKey: keyof ThemeShadows) => ThemeShadows[typeof shadowKey];
   getFontSize: (sizeKey: keyof ThemeFontSizes) => ThemeFontSizes[typeof sizeKey];
+  getDimension: (dimensionKey: keyof ThemeDimensions) => number;
 }
 
 const defaultTheme: Theme = {
@@ -110,6 +119,8 @@ const defaultTheme: Theme = {
     textSecondary: '#374151',
     surface: '#ffffff',
     placeholderText: '#9ca3af',
+    white: '#ffffff',
+    gray200: '#e5e7eb',
   },
   spacing: {
     0.5: 2,
@@ -127,6 +138,7 @@ const defaultTheme: Theme = {
     input: 8,
     card: 12,
     circle: 9999,
+    actionIcon: 12,
   },
   shadows: {
     button: {
@@ -169,6 +181,10 @@ const defaultTheme: Theme = {
   minWidth: {
     iconButton: 80,
   },
+  dimensions: {
+    actionIcon: 48,
+    actionIconContainer: 24,
+  },
 };
 
 // Create the Zustand store
@@ -201,5 +217,9 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
   getFontSize: (sizeKey) => {
     const { theme } = get();
     return theme.fontSizes[sizeKey];
+  },
+  getDimension: (dimensionKey) => {
+    const { theme } = get();
+    return theme.dimensions[dimensionKey];
   },
 }));

@@ -14,6 +14,8 @@ import {CanvasState, ImageElement, TextElement} from '../../types';
 import {Button} from '../Button';
 import ImageActions from './Actions/Image';
 import TextActions from './Actions/Text';
+import {useThemeStore} from '../../stores/theme';
+import useStyles from './styles';
 
 interface Props {
   selectedElementId: string | null;
@@ -44,6 +46,10 @@ const CanvasActions: FC<Props> = ({
   currentTranslateX = 0,
   currentTranslateY = 0,
 }) => {
+  const styles = useStyles();
+  const getColor = useThemeStore(state => state.getColor);
+  const getDimension = useThemeStore(state => state.getDimension);
+
   // Get screen dimensions as fallback
   const screenDimensions = Dimensions.get('window');
 
@@ -223,66 +229,77 @@ const CanvasActions: FC<Props> = ({
   }));
 
   return (
-    <Animated.View
-      className="bg-white border-t border-gray-200"
-      style={bottomBarAnimatedStyle}>
+    <Animated.View style={[styles.bottomBarContainer, bottomBarAnimatedStyle]}>
       {/* Normal View */}
       <Animated.View
-        className="absolute inset-0 p-1 justify-center"
-        style={addElementsAnimatedStyle}>
-        <View className="flex-row justify-center gap-8">
+        style={[styles.addElementsContainer, addElementsAnimatedStyle]}>
+        <View style={styles.addElementsRow}>
           {/* Add Text Button */}
           <Animated.View style={button1AnimatedStyle}>
             <Button
+              variant="ghost"
               onPress={addText}
-              className="flex-col justify-center items-center">
-              <View className="w-12 h-12 bg-primary rounded-xl items-center justify-center mb-2">
-                <MaterialIcons name="text-fields" size={24} color="white" />
+              style={styles.actionButtonContainer}>
+              <View style={styles.actionIconContainer}>
+                <MaterialIcons
+                  name="text-fields"
+                  size={getDimension('actionIconContainer')}
+                  color={getColor('white')}
+                />
               </View>
-              <Text className="text-primary font-medium text-sm">Add Text</Text>
+              <Text style={styles.actionLabel}>Add Text</Text>
             </Button>
           </Animated.View>
 
           {/* Add Image Button */}
           <Animated.View style={button2AnimatedStyle}>
             <Button
+              variant="ghost"
               onPress={addImage}
-              className="flex-col justify-center items-center">
-              <View className="w-12 h-12 bg-primary rounded-xl items-center justify-center mb-2">
-                <MaterialIcons name="image" size={24} color="white" />
+              style={styles.actionButtonContainer}>
+              <View style={styles.actionIconContainer}>
+                <MaterialIcons
+                  name="image"
+                  size={getDimension('actionIconContainer')}
+                  color={getColor('white')}
+                />
               </View>
-              <Text className="text-primary font-medium text-sm">
-                Add Image
-              </Text>
+              <Text style={styles.actionLabel}>Add Image</Text>
             </Button>
           </Animated.View>
 
+          {/* Export Button */}
           <Animated.View style={button2AnimatedStyle}>
             <Button
+              variant="ghost"
               onPress={onExport}
-              className="flex-col justify-center items-center">
-              <View className="w-12 h-12 bg-primary rounded-xl items-center justify-center mb-2">
-                <MaterialIcons name="download" size={24} color="white" />
+              style={styles.actionButtonContainer}>
+              <View style={styles.actionIconContainer}>
+                <MaterialIcons
+                  name="download"
+                  size={getDimension('actionIconContainer')}
+                  color={getColor('white')}
+                />
               </View>
-              <Text className="text-primary font-medium text-sm">
-                Export Meme
-              </Text>
+              <Text style={styles.actionLabel}>Export Meme</Text>
             </Button>
           </Animated.View>
         </View>
       </Animated.View>
 
       {/* Element Controls View */}
-      <Animated.View
-        className="absolute inset-0 "
-        style={controlsAnimatedStyle}>
-        <View className="flex-row justify-end">
+      <Animated.View style={[styles.controlsContainer, controlsAnimatedStyle]}>
+        <View style={styles.controlsHeader}>
           <Button
             onPress={onClearSelection}
             variant="ghost"
             size="sm"
             leftIcon={
-              <MaterialIcons name="close" size={24} color={'#55a4ff'} />
+              <MaterialIcons
+                name="close"
+                size={24}
+                color={getColor('primary')}
+              />
             }
           />
         </View>
