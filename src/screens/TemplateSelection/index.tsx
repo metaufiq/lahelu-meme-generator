@@ -12,7 +12,6 @@ type TemplateSelectionScreenProps = NativeStackScreenProps<
   'TemplateSelection'
 >;
 
-// Template Selection Screen
 const TemplateSelectionScreen: React.FC<TemplateSelectionScreenProps> = ({
   navigation,
 }) => {

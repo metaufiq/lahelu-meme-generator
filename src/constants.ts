@@ -17,5 +17,5 @@ export const MEME_TEMPLATES: MemeTemplate[] = [
     width: 500,
     height: 300,
   },
-  // Add more templates
+  // Add more templates if needed
 ];

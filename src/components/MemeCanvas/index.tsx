@@ -1,6 +1,5 @@
-// src/components/Canvas/MemeCanvas.tsx
 import React, {forwardRef} from 'react';
-import {View, Text} from 'react-native';
+import {View} from 'react-native';
 import {
   Gesture,
   GestureDetector,
@@ -67,11 +66,7 @@ const MemeCanvas = forwardRef<View, Props>(
     }));
 
     if (!canvasState.template) {
-      return (
-        <View style={styles.emptyCanvas}>
-          <Text>Select a template to start creating your meme</Text>
-        </View>
-      );
+      return null;
     }
 
     return (

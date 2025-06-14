@@ -1,4 +1,3 @@
-// src/components/Canvas/DraggableImage.tsx
 import React from 'react';
 import {Image} from 'react-native';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';

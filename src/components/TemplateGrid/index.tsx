@@ -1,4 +1,3 @@
-// src/components/TemplateSelector/TemplateGrid.tsx
 import React from 'react';
 import {
   FlatList,

@@ -10,7 +10,6 @@ import TemplateSelectionScreen from '../screens/TemplateSelection';
 import {RootStackParamList} from './types';
 import {Button} from '../components/Button';
 
-// Navigation Stack
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const _memeCanvasOption = ({

@@ -1,4 +1,3 @@
-// src/components/Controls/TextControls.tsx
 import React, {useCallback} from 'react';
 import {View, Text, TextInput, TouchableOpacity} from 'react-native';
 import Slider from '@react-native-community/slider';

@@ -1,5 +1,3 @@
-/* eslint-disable react-native/no-inline-styles */
-// src/components/Canvas/DraggableText.tsx
 import React from 'react';
 import {Text} from 'react-native';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
@@ -47,14 +45,14 @@ const DraggableText: React.FC<Props> = ({element, onUpdate, onSelect}) => {
 
   return (
     <GestureDetector gesture={panGesture}>
-      <Animated.View style={[{position: 'absolute'}, animatedStyle]}>
+      <Animated.View style={[animatedStyle]} className={'absolute'}>
         <Text
           style={{
             fontSize: element.fontSize,
             color: element.color,
             fontFamily: element.fontFamily,
-            fontWeight: 'bold',
-          }}>
+          }}
+          className="bold">
           {element.text}
         </Text>
       </Animated.View>

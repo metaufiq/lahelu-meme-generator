@@ -62,7 +62,7 @@ const BottomControls: FC<BottomControlsProps> = ({
         easing: Easing.out(Easing.quad),
       });
     } else {
-      // Switch to add elements view
+      // Switch to normal view
       bottomBarHeight.value = withSpring(NORMAL_HEIGHT, {
         damping: 15,
         stiffness: 100,
@@ -172,6 +172,7 @@ const BottomControls: FC<BottomControlsProps> = ({
     <Animated.View
       className="bg-white border-t border-gray-200"
       style={bottomBarAnimatedStyle}>
+      {/* Normal View */}
       <Animated.View
         className="absolute inset-0 p-1 justify-center"
         style={addElementsAnimatedStyle}>
