@@ -16,7 +16,7 @@ import Svg, {Image as SvgImage} from 'react-native-svg';
 import {CanvasState} from '../../types';
 import DraggableText from './Draggable/Text';
 import DraggableImage from './Draggable/Image';
-import styles from './style';
+import useStyles from './styles';
 
 interface Props {
   canvasState: CanvasState;
@@ -31,6 +31,7 @@ interface Props {
 
 const MemeCanvas = forwardRef<View, Props>(
   ({canvasState, onUpdateCanvas, onSelectElement, onTransformUpdate}, ref) => {
+    const styles = useStyles();
     const scale = useSharedValue(1);
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);

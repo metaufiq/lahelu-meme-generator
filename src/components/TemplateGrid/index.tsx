@@ -1,58 +1,67 @@
-import React from 'react';
-import {
-  FlatList,
-  TouchableOpacity,
-  Image,
-  Text,
-  StyleSheet,
-} from 'react-native';
+import React, {useCallback} from 'react';
+import {FlatList, TouchableOpacity, Image, Text} from 'react-native';
+
 import {MemeTemplate} from '../../types';
-import {MEME_TEMPLATES} from '../../constants';
+import useStyles from './styles';
+
+const MEME_TEMPLATES: MemeTemplate[] = [
+  {
+    id: '1',
+    name: 'Drake Pointing',
+    url: 'https://i.imgflip.com/30b1gx.jpg',
+    thumbnail: 'https://i.imgflip.com/30b1gx.jpg',
+    width: 500,
+    height: 600,
+  },
+  {
+    id: '2',
+    name: 'Distracted Boyfriend',
+    url: 'https://i.imgflip.com/1ur9b0.jpg',
+    thumbnail: 'https://i.imgflip.com/1ur9b0.jpg',
+    width: 500,
+    height: 300,
+  },
+  // Add more templates if needed
+];
 
 interface Props {
   onSelectTemplate: (template: MemeTemplate) => void;
 }
 
-const TemplateGrid: React.FC<Props> = ({onSelectTemplate}) => {
-  const renderTemplate = ({item}: {item: MemeTemplate}) => (
-    <TouchableOpacity
-      style={styles.templateItem}
-      onPress={() => onSelectTemplate(item)}>
-      <Image source={{uri: item.thumbnail}} style={styles.templateImage} />
-      <Text style={styles.templateName}>{item.name}</Text>
-    </TouchableOpacity>
+interface RenderTemplateProps extends Props {
+  styles: ReturnType<typeof useStyles>;
+}
+
+const _renderTemplate = ({onSelectTemplate, styles}: RenderTemplateProps) =>
+  useCallback(
+    ({item}: {item: MemeTemplate}) => (
+      <TouchableOpacity
+        style={styles.templateItem}
+        onPress={() => onSelectTemplate(item)}>
+        <Image source={{uri: item.thumbnail}} style={styles.templateImage} />
+        <Text style={styles.templateName}>{item.name}</Text>
+      </TouchableOpacity>
+    ),
+    [
+      onSelectTemplate,
+      styles.templateImage,
+      styles.templateItem,
+      styles.templateName,
+    ],
   );
+
+const TemplateGrid: React.FC<Props> = ({onSelectTemplate}) => {
+  const styles = useStyles();
 
   return (
     <FlatList
       data={MEME_TEMPLATES}
-      renderItem={renderTemplate}
+      renderItem={_renderTemplate({onSelectTemplate, styles})}
       numColumns={2}
       keyExtractor={item => item.id}
       contentContainerStyle={styles.container}
     />
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 10,
-  },
-  templateItem: {
-    flex: 1,
-    margin: 5,
-    alignItems: 'center',
-  },
-  templateImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 8,
-  },
-  templateName: {
-    marginTop: 5,
-    fontSize: 12,
-    textAlign: 'center',
-  },
-});
 
 export default TemplateGrid;

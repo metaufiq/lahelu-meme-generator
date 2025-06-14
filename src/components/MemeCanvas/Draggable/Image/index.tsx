@@ -1,22 +1,25 @@
 import React from 'react';
-import {Text} from 'react-native';
+import {Image} from 'react-native';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   runOnJS,
 } from 'react-native-reanimated';
-import {TextElement} from '../../../types';
+
+import {ImageElement} from '../../../../types';
+import useStyles from './styles';
 
 interface Props {
-  element: TextElement;
-  onUpdate: (element: TextElement) => void;
+  element: ImageElement;
+  onUpdate: (element: ImageElement) => void;
   onSelect: () => void;
 }
 
-const DraggableText: React.FC<Props> = ({element, onUpdate, onSelect}) => {
+const DraggableImage: React.FC<Props> = ({element, onUpdate, onSelect}) => {
   const translateX = useSharedValue(element.x);
   const translateY = useSharedValue(element.y);
+  const styles = useStyles();
 
   const panGesture = Gesture.Pan()
     .onStart(() => {
@@ -45,19 +48,19 @@ const DraggableText: React.FC<Props> = ({element, onUpdate, onSelect}) => {
 
   return (
     <GestureDetector gesture={panGesture}>
-      <Animated.View style={[animatedStyle]} className={'absolute'}>
-        <Text
+      <Animated.View style={[animatedStyle, styles.container]}>
+        <Image
+          source={{uri: element.uri}}
           style={{
-            fontSize: element.fontSize,
-            color: element.color,
-            fontFamily: element.fontFamily,
+            width: element.width,
+            height: element.height,
+            opacity: element.opacity,
           }}
-          className="bold">
-          {element.text}
-        </Text>
+          resizeMode="contain"
+        />
       </Animated.View>
     </GestureDetector>
   );
 };
 
-export default DraggableText;
+export default DraggableImage;
