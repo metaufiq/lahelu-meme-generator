@@ -21,7 +21,10 @@ interface BottomControlsProps {
   canvasState: CanvasState;
   onUpdateCanvas: (updates: Partial<CanvasState>) => void;
   onClearSelection: () => void;
+  onExport: () => Promise<void>;
 }
+
+const NORMAL_HEIGHT = 90;
 
 const BottomControls: FC<BottomControlsProps> = ({
   selectedElementId,
@@ -29,9 +32,10 @@ const BottomControls: FC<BottomControlsProps> = ({
   canvasState,
   onUpdateCanvas,
   onClearSelection,
+  onExport,
 }) => {
   // Animation values
-  const bottomBarHeight = useSharedValue(120);
+  const bottomBarHeight = useSharedValue(NORMAL_HEIGHT);
   const addElementsOpacity = useSharedValue(1);
   const addElementsTranslateY = useSharedValue(0);
   const controlsOpacity = useSharedValue(0);
@@ -59,7 +63,10 @@ const BottomControls: FC<BottomControlsProps> = ({
       });
     } else {
       // Switch to add elements view
-      bottomBarHeight.value = withSpring(120, {damping: 15, stiffness: 100});
+      bottomBarHeight.value = withSpring(NORMAL_HEIGHT, {
+        damping: 15,
+        stiffness: 100,
+      });
       controlsOpacity.value = withTiming(0, {duration: 200});
       controlsTranslateY.value = withTiming(20, {duration: 200});
       addElementsOpacity.value = withTiming(1, {
@@ -165,9 +172,8 @@ const BottomControls: FC<BottomControlsProps> = ({
     <Animated.View
       className="bg-white border-t border-gray-200"
       style={bottomBarAnimatedStyle}>
-      {/* Add Elements View */}
       <Animated.View
-        className="absolute inset-0 p-4 justify-center"
+        className="absolute inset-0 p-1 justify-center"
         style={addElementsAnimatedStyle}>
         <View className="flex-row justify-center gap-8">
           {/* Add Text Button */}
@@ -192,6 +198,19 @@ const BottomControls: FC<BottomControlsProps> = ({
               </View>
               <Text className="text-primary font-medium text-sm">
                 Add Image
+              </Text>
+            </Button>
+          </Animated.View>
+
+          <Animated.View style={button2AnimatedStyle}>
+            <Button
+              onPress={onExport}
+              className="flex-col justify-center items-center">
+              <View className="w-12 h-12 bg-primary rounded-xl items-center justify-center mb-2">
+                <MaterialIcons name="download" size={24} color="white" />
+              </View>
+              <Text className="text-primary font-medium text-sm">
+                Export Meme
               </Text>
             </Button>
           </Animated.View>

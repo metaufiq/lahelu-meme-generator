@@ -1,16 +1,19 @@
-import {FC, useCallback, useEffect, useState} from 'react';
+import {FC, useCallback, useEffect, useRef, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {Text, View, TouchableOpacity} from 'react-native';
+import {Share, Text, View} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {captureRef} from 'react-native-view-shot';
 
 import {CanvasState} from '../../types';
 import BottomControls from '../../components/BottomControls';
 import {RootStackParamList} from '../../routes/types';
 import MemeCanvas from '../../components/MemeCanvas';
+import {Button} from '../../components/Button';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MemeCanvas'>;
 
 const MemeCanvasScreen: FC<Props> = ({navigation, route}) => {
+  const canvasRef = useRef<View>(null);
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
     null,
   );
@@ -26,6 +29,17 @@ const MemeCanvasScreen: FC<Props> = ({navigation, route}) => {
     translateX: 0,
     translateY: 0,
   }));
+
+  const onExport = async () => {
+    try {
+      const url = await captureRef(canvasRef);
+      await Share.share({
+        url,
+      });
+    } catch (error) {
+      console.error('Export failed', error);
+    }
+  };
 
   useEffect(() => {
     if (route.params?.selectedTemplate) {
@@ -71,13 +85,10 @@ const MemeCanvasScreen: FC<Props> = ({navigation, route}) => {
             <Text className="text-lg text-muted text-center mb-8 leading-6">
               Choose a template to get started with your meme creation
             </Text>
-            <TouchableOpacity
+            <Button
               onPress={navigateToTemplateSelection}
-              className="bg-primary px-8 py-4 rounded-button shadow-button active:shadow-button-pressed">
-              <Text className="text-white text-lg font-semibold">
-                Choose Template
-              </Text>
-            </TouchableOpacity>
+              title="Chooose Template"
+            />
           </View>
         </View>
       </SafeAreaView>
@@ -92,6 +103,7 @@ const MemeCanvasScreen: FC<Props> = ({navigation, route}) => {
           canvasState={canvasState}
           onUpdateCanvas={handleUpdateCanvas}
           onSelectElement={handleSelectElement}
+          ref={canvasRef}
         />
       </View>
 
@@ -100,6 +112,7 @@ const MemeCanvasScreen: FC<Props> = ({navigation, route}) => {
         selectedElementId={selectedElementId}
         selectedElementType={selectedElementType}
         canvasState={canvasState}
+        onExport={onExport}
         onUpdateCanvas={handleUpdateCanvas}
         onClearSelection={handleClearSelection}
       />
