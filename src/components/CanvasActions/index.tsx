@@ -93,10 +93,7 @@ const CanvasActions: FC<Props> = ({
   useEffect(() => {
     if (selectedElementId) {
       // Switch to controls view
-      bottomBarHeight.value = withSpring(
-        selectedElementType === 'text' ? 190 : 310, // Reduced height since we removed actions
-        {damping: 15, stiffness: 100},
-      );
+      bottomBarHeight.value = withSpring(190, {damping: 15, stiffness: 100});
       addElementsOpacity.value = withTiming(0, {duration: 200});
       addElementsTranslateY.value = withTiming(-10, {duration: 200});
       controlsOpacity.value = withTiming(1, {
@@ -339,12 +336,12 @@ const CanvasActions: FC<Props> = ({
               style={styles.actionButtonContainer}>
               <View style={styles.actionIconContainer}>
                 <MaterialIcons
-                  name="download"
+                  name="share"
                   size={ICON_SIZE}
                   color={getColor('white')}
                 />
               </View>
-              <Text style={styles.actionLabel}>Export Meme</Text>
+              <Text style={styles.actionLabel}>Share Now</Text>
             </Button>
           </Animated.View>
         </View>

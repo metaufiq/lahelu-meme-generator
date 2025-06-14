@@ -7,41 +7,48 @@ const useStyles = () => {
   const theme = useThemeStore((state) => state.theme);
   const getColor = useThemeStore((state) => state.getColor);
   const getSpacing = useThemeStore((state) => state.getSpacing);
-  const getFontSize = useThemeStore(state=>state.getFontSize);
+  const getFontSize = useThemeStore((state) => state.getFontSize);
 
-  const styles = useMemo(()=>StyleSheet.create({
+  const styles = useMemo(() => StyleSheet.create({
     container: {
-      padding: getSpacing(4),
+      flex: 1,
     },
-    controlGroup: {
-      marginBottom: getSpacing(4),
+    tabContent: {
+      padding: getSpacing(4),
     },
     label: {
       color: getColor('textSecondary'),
       fontSize: getFontSize('sm'),
       fontWeight: '500',
-      marginBottom: getSpacing(2),
       fontFamily: theme.fontFamily.sans[0],
+      marginBottom: getSpacing(2),
+    },
+    sliderContainer: {
+      marginBottom: getSpacing(4),
     },
     slider: {
       width: '100%',
       height: 40,
     },
-    buttonContainer: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      gap: getSpacing(2),
-    },
-  }), [getColor, getFontSize, getSpacing, theme.fontFamily.sans]);
+  }), [
+    getColor,
+    getSpacing,
+    getFontSize,
+    theme.fontFamily.sans,
+  ]);
 
-  const sliderColors = useMemo(()=>({
-    minimumTrackTintColor: getColor('primary'),
-    maximumTrackTintColor: getColor('border'),
-    thumbTintColor: getColor('primary'),
+  const sliderColors = useMemo(() => ({
+    minimum: getColor('primary'),
+    maximum: getColor('border'),
+    thumb: getColor('primary'),
   }), [getColor]);
 
   return {
-    styles,
+    containerStyle: styles.container,
+    tabContentStyle: styles.tabContent,
+    labelStyle: styles.label,
+    sliderContainerStyle: styles.sliderContainer,
+    sliderStyle: styles.slider,
     sliderColors,
   };
 };
