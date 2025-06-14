@@ -4,6 +4,7 @@ import Slider from '@react-native-community/slider';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {ImageElement, CanvasState} from '../../../../types';
 import {Button} from '../../../Button';
+import useStyles from './styles';
 
 interface Props {
   element?: ImageElement | null;
@@ -18,6 +19,8 @@ const ImageActions: React.FC<Props> = ({
   onUpdateCanvas,
   onClearSelection,
 }) => {
+  const {styles, sliderColors} = useStyles();
+
   const handleUpdate = useCallback(
     (updatedElement: ImageElement) => {
       const updatedImages = imageElements.map(i =>
@@ -54,60 +57,60 @@ const ImageActions: React.FC<Props> = ({
   }
 
   return (
-    <View className="p-4">
+    <View style={styles.container}>
       {/* Opacity Control */}
-      <View className="mb-4">
-        <Text className="text-gray-700 text-sm font-medium mb-2">
+      <View style={styles.controlGroup}>
+        <Text style={styles.label}>
           Opacity: {Math.round(element.opacity * 100)}%
         </Text>
         <Slider
-          className="w-full h-10"
+          style={styles.slider}
           minimumValue={0}
           maximumValue={1}
           value={element.opacity}
           onValueChange={opacity => handleUpdate({...element, opacity})}
-          minimumTrackTintColor="#55a4ff"
-          maximumTrackTintColor="#e5e7eb"
-          thumbTintColor="#55a4ff"
+          minimumTrackTintColor={sliderColors.minimumTrackTintColor}
+          maximumTrackTintColor={sliderColors.maximumTrackTintColor}
+          thumbTintColor={sliderColors.thumbTintColor}
         />
       </View>
 
       {/* Scale Control */}
-      <View className="mb-4">
-        <Text className="text-gray-700 text-sm font-medium mb-2">
+      <View style={styles.controlGroup}>
+        <Text style={styles.label}>
           Scale: {Math.round(element.scale * 100)}%
         </Text>
         <Slider
-          className="w-full h-10"
+          style={styles.slider}
           minimumValue={0.1}
           maximumValue={3}
           value={element.scale}
           onValueChange={scale => handleUpdate({...element, scale})}
-          minimumTrackTintColor="#55a4ff"
-          maximumTrackTintColor="#e5e7eb"
-          thumbTintColor="#55a4ff"
+          minimumTrackTintColor={sliderColors.minimumTrackTintColor}
+          maximumTrackTintColor={sliderColors.maximumTrackTintColor}
+          thumbTintColor={sliderColors.thumbTintColor}
         />
       </View>
 
       {/* Rotation Control */}
-      <View className="mb-4">
-        <Text className="text-gray-700 text-sm font-medium mb-2">
+      <View style={styles.controlGroup}>
+        <Text style={styles.label}>
           Rotation: {Math.round(element.rotation)}°
         </Text>
         <Slider
-          className="w-full h-10"
+          style={styles.slider}
           minimumValue={-180}
           maximumValue={180}
           value={element.rotation}
           onValueChange={rotation => handleUpdate({...element, rotation})}
-          minimumTrackTintColor="#55a4ff"
-          maximumTrackTintColor="#e5e7eb"
-          thumbTintColor="#55a4ff"
+          minimumTrackTintColor={sliderColors.minimumTrackTintColor}
+          maximumTrackTintColor={sliderColors.maximumTrackTintColor}
+          thumbTintColor={sliderColors.thumbTintColor}
         />
       </View>
 
       {/* Action Buttons */}
-      <View className="flex-row justify-center gap-2">
+      <View style={styles.buttonContainer}>
         <Button
           onPress={handleDuplicate}
           title="Duplicate"

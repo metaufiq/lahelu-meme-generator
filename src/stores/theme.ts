@@ -1,19 +1,26 @@
 import { create } from 'zustand';
 import { Platform } from 'react-native';
 
-
 export interface ThemeColors {
   background: string;
+  border: string;
   danger: string;
   muted: string;
   primary: string;
   primaryDark: string;
   primaryLight: string;
   text: string;
+  textSecondary: string;
 }
 
 export interface ThemeSpacing {
   0.5: number;
+  1: number;
+  2: number;
+  3: number;
+  4: number;
+  6: number;
+  8: number;
   [key: string]: number;
 }
 
@@ -67,15 +74,23 @@ export interface ThemeState {
 const defaultTheme: Theme = {
   colors: {
     background: '#f7f9fb',
+    border: '#e5e7eb',
     danger: '#ef4444',
     muted: '#6b7280',
     primary: '#55a4ff',
     primaryDark: '#2a7ed9',
     primaryLight: '#a8d4ff',
     text: '#1a1a1a',
+    textSecondary: '#374151',
   },
   spacing: {
     0.5: 2,
+    1: 4,
+    2: 8,
+    3: 12,
+    4: 16,
+    6: 24,
+    8: 32,
   },
   borderRadius: {
     button: 8,

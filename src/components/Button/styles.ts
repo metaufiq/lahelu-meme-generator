@@ -21,7 +21,7 @@ const useStyles = ({
   const getBorderRadius = useThemeStore((state) => state.getBorderRadius);
   const getShadow = useThemeStore((state) => state.getShadow);
 
-  const styles = StyleSheet.create({
+  const styles = useMemo(()=>StyleSheet.create({
     // Base styles
     baseButton: {
       flexDirection: 'row',
@@ -166,7 +166,7 @@ const useStyles = ({
     iconContainerLarge: {
       marginHorizontal: 8,
     },
-  });
+  }), [getBorderRadius, getColor, getShadow, getSpacing, theme.fontFamily.sans]);
 
   // Helper functions to get computed styles
   const getSizeStyle = useCallback(() => {
@@ -188,7 +188,7 @@ const useStyles = ({
     return styles[styleKey];
   }, [isDisabled, styles, variant]);
 
-  const getTextSizeStyle = () => {
+  const getTextSizeStyle = useCallback(() => {
     switch (size) {
       case 'sm':
         return styles.textSmall;
@@ -199,15 +199,15 @@ const useStyles = ({
       default:
         return styles.textMedium;
     }
-  };
+  }, [size, styles.textLarge, styles.textMedium, styles.textSmall, styles.textXLarge]);
 
-  const getTextColorStyle = () => {
+  const getTextColorStyle = useCallback(() => {
     const suffix = isDisabled ? 'Disabled' : 'Enabled';
     const styleKey = `text${variant?.charAt(0).toUpperCase() + variant?.slice(1)}${suffix}` as keyof typeof styles;
     return styles[styleKey];
-  };
+  },[isDisabled, styles, variant]);
 
-  const getIconSpacingStyle = () => {
+  const getIconSpacingStyle = useCallback(() => {
     switch (size) {
       case 'sm':
         return styles.iconContainerSmall;
@@ -217,16 +217,16 @@ const useStyles = ({
       default:
         return styles.iconContainerMedium;
     }
-  };
+  }, [size, styles.iconContainerLarge, styles.iconContainerMedium, styles.iconContainerSmall]);
 
-  const getLoadingColor = () => {
+  const getLoadingColor = useCallback(() => {
     if (variant === 'primary' || variant === 'danger') {
       return '#ffffff';
     } else if (variant === 'outline') {
       return getColor('primary');
     }
     return getColor('muted');
-  };
+  }, [getColor, variant]);
 
   // Computed style combinations
   const buttonStyle:ViewStyle[] = useMemo(()=>{
@@ -239,11 +239,11 @@ const useStyles = ({
    return result;
   }, [getSizeStyle, getVariantStyle, styles.baseButton]);
 
-  const textStyle = [
+  const textStyle = useMemo(()=>[
     styles.baseText,
     getTextSizeStyle(),
     getTextColorStyle(),
-  ];
+  ],[getTextColorStyle, getTextSizeStyle, styles.baseText]);
 
   return {
     styles,
