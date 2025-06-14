@@ -5,7 +5,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {captureRef} from 'react-native-view-shot';
 import Share from 'react-native-share';
 
-import {CanvasState} from '../../types';
+import {CanvasState, ElementType} from '../../types';
 import CanvasActions from '../../components/CanvasActions';
 import {RootStackParamList} from '../../routes/types';
 import MemeCanvas from '../../components/MemeCanvas';
@@ -21,9 +21,8 @@ const MemeCanvasScreen: FC<Props> = ({navigation, route}) => {
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
     null,
   );
-  const [selectedElementType, setSelectedElementType] = useState<
-    'text' | 'image' | null
-  >(null);
+  const [selectedElementType, setSelectedElementType] =
+    useState<ElementType | null>(null);
 
   // Track current transform values for proper centering
   const [currentScale, setCurrentScale] = useState(1);
@@ -78,7 +77,7 @@ const MemeCanvasScreen: FC<Props> = ({navigation, route}) => {
   }, []);
 
   const handleSelectElement = useCallback(
-    (id: string | null, type: 'text' | 'image' | null) => {
+    (id: string | null, type: ElementType | null) => {
       setSelectedElementId(id);
       setSelectedElementType(type);
     },

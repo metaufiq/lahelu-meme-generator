@@ -13,7 +13,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Svg, {Image as SvgImage} from 'react-native-svg';
 
-import {CanvasState} from '../../types';
+import {CanvasState, ElementType} from '../../types';
 import DraggableText from './Draggable/Text';
 import DraggableImage from './Draggable/Image';
 import useStyles from './styles';
@@ -21,7 +21,7 @@ import useStyles from './styles';
 interface Props {
   canvasState: CanvasState;
   onUpdateCanvas: (state: Partial<CanvasState>) => void;
-  onSelectElement: (id: string, type: 'text' | 'image') => void;
+  onSelectElement: (id: string, type: ElementType) => void;
   onTransformUpdate?: (transform: {
     scale: number;
     translateX: number;

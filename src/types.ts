@@ -1,3 +1,5 @@
+export type ElementType = 'image' | 'text'
+
 export interface MemeTemplate {
   id: string;
   name: string;

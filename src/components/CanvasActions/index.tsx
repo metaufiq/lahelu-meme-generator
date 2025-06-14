@@ -7,10 +7,9 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   withSpring,
-  Easing,
 } from 'react-native-reanimated';
 
-import {CanvasState, ImageElement, TextElement} from '../../types';
+import {CanvasState, ElementType, ImageElement, TextElement} from '../../types';
 import {Button} from '../Button';
 import ImageActions from './Actions/Image';
 import TextActions, {COLOR_PALETTE} from './Actions/Text';
@@ -19,7 +18,7 @@ import useStyles, {ICON_SIZE} from './styles';
 
 interface Props {
   selectedElementId: string | null;
-  selectedElementType: 'text' | 'image' | null;
+  selectedElementType: ElementType | null;
   canvasState: CanvasState;
   onUpdateCanvas: (updates: Partial<CanvasState>) => void;
   onClearSelection: () => void;
@@ -32,6 +31,7 @@ interface Props {
 }
 
 const NORMAL_HEIGHT = 70;
+const EXPANDED_HEIGHT = 200;
 
 const CanvasActions: FC<Props> = ({
   selectedElementId,
@@ -48,28 +48,25 @@ const CanvasActions: FC<Props> = ({
 }) => {
   const styles = useStyles();
   const getColor = useThemeStore(state => state.getColor);
-
-  // Get screen dimensions as fallback
   const screenDimensions = Dimensions.get('window');
 
-  // Calculate center position based on current viewport
+  const bottomBarHeight = useSharedValue(NORMAL_HEIGHT);
+  const contentOpacity = useSharedValue(1);
+  const controlsOpacity = useSharedValue(0);
+
+  const isElementSelected = !!selectedElementId;
+
+  // Get center position for new elements
   const getCenterPosition = useCallback(() => {
-    // Use provided canvas dimensions or fallback to screen dimensions
     const width = canvasWidth || screenDimensions.width;
     const height = canvasHeight || screenDimensions.height * 0.7;
 
-    // Get the center of the current viewport (screen center)
     const viewportCenterX = width / 2;
     const viewportCenterY = height / 2;
 
-    // Convert viewport center to canvas coordinates by accounting for current transform
-    // Reverse the transform: (screenPoint - translation) / scale = canvasPoint
-    const canvasCenterX = (viewportCenterX - currentTranslateX) / currentScale;
-    const canvasCenterY = (viewportCenterY - currentTranslateY) / currentScale;
-
     return {
-      x: canvasCenterX,
-      y: canvasCenterY,
+      x: (viewportCenterX - currentTranslateX) / currentScale,
+      y: (viewportCenterY - currentTranslateY) / currentScale,
     };
   }, [
     canvasWidth,
@@ -80,281 +77,178 @@ const CanvasActions: FC<Props> = ({
     currentTranslateY,
   ]);
 
-  // Animation values
-  const bottomBarHeight = useSharedValue(NORMAL_HEIGHT);
-  const addElementsOpacity = useSharedValue(1);
-  const addElementsTranslateY = useSharedValue(0);
-  const controlsOpacity = useSharedValue(0);
-  const controlsTranslateY = useSharedValue(20);
-  const buttonScale1 = useSharedValue(1);
-  const buttonScale2 = useSharedValue(1);
-
   // Animate bottom bar when selection changes
   useEffect(() => {
-    if (selectedElementId) {
-      // Switch to controls view
-      bottomBarHeight.value = withSpring(200, {damping: 15, stiffness: 100});
-      addElementsOpacity.value = withTiming(0, {duration: 200});
-      addElementsTranslateY.value = withTiming(-10, {duration: 200});
-      controlsOpacity.value = withTiming(1, {
-        duration: 300,
-        easing: Easing.out(Easing.quad),
-      });
-      controlsTranslateY.value = withTiming(0, {
-        duration: 300,
-        easing: Easing.out(Easing.quad),
-      });
+    if (isElementSelected) {
+      bottomBarHeight.value = withSpring(EXPANDED_HEIGHT);
+      contentOpacity.value = withTiming(0, {duration: 200});
+      controlsOpacity.value = withTiming(1, {duration: 300});
     } else {
-      // Switch to normal view
-      bottomBarHeight.value = withSpring(NORMAL_HEIGHT, {
-        damping: 15,
-        stiffness: 100,
-      });
+      bottomBarHeight.value = withSpring(NORMAL_HEIGHT);
       controlsOpacity.value = withTiming(0, {duration: 200});
-      controlsTranslateY.value = withTiming(20, {duration: 200});
-      addElementsOpacity.value = withTiming(1, {
-        duration: 300,
-        easing: Easing.out(Easing.quad),
-      });
-      addElementsTranslateY.value = withTiming(0, {
-        duration: 300,
-        easing: Easing.out(Easing.quad),
-      });
+      contentOpacity.value = withTiming(1, {duration: 300});
     }
-  }, [
-    addElementsOpacity,
-    addElementsTranslateY,
-    bottomBarHeight,
-    controlsOpacity,
-    controlsTranslateY,
-    selectedElementId,
-    selectedElementType,
-  ]);
+  }, [isElementSelected]);
 
-  const addText = useCallback(() => {
-    buttonScale1.value = withSpring(0.9, {damping: 10}, () => {
-      buttonScale1.value = withSpring(1, {damping: 8});
-    });
-
-    const centerPosition = getCenterPosition();
-    const newText: TextElement = {
-      id: Date.now().toString(),
-      text: 'Your text here',
-      x: centerPosition.x,
-      y: centerPosition.y,
-      fontSize: 24,
-      color: COLOR_PALETTE[0],
-      fontFamily: 'Arial',
-      rotation: 0,
-      scale: 1,
-    };
-
-    onUpdateCanvas({
-      textElements: [...canvasState.textElements, newText],
-    });
-  }, [
-    buttonScale1,
-    canvasState.textElements,
-    onUpdateCanvas,
-    getCenterPosition,
-  ]);
-
-  const addImage = useCallback(() => {
-    buttonScale2.value = withSpring(0.9, {damping: 10}, () => {
-      buttonScale2.value = withSpring(1, {damping: 8});
-    });
-
-    launchImageLibrary({mediaType: 'photo'}, response => {
-      if (response.assets && response.assets[0]) {
-        const asset = response.assets[0];
+  const addElement = useCallback(
+    (type: ElementType) => {
+      if (type === 'text') {
         const centerPosition = getCenterPosition();
-
-        const newImage: ImageElement = {
+        const newText: TextElement = {
           id: Date.now().toString(),
-          uri: asset.uri!,
+          text: 'Your text here',
           x: centerPosition.x,
           y: centerPosition.y,
-          width: 100,
-          height: 100,
+          fontSize: 24,
+          color: COLOR_PALETTE[0],
+          fontFamily: 'Arial',
           rotation: 0,
           scale: 1,
-          opacity: 1,
         };
-
         onUpdateCanvas({
-          imageElements: [...canvasState.imageElements, newImage],
+          textElements: [...canvasState.textElements, newText],
+        });
+      } else {
+        launchImageLibrary({mediaType: 'photo'}, response => {
+          if (response.assets?.[0]) {
+            const centerPosition = getCenterPosition();
+            const newImage: ImageElement = {
+              id: Date.now().toString(),
+              uri: response.assets[0].uri!,
+              x: centerPosition.x,
+              y: centerPosition.y,
+              width: 100,
+              height: 100,
+              rotation: 0,
+              scale: 1,
+              opacity: 1,
+            };
+            onUpdateCanvas({
+              imageElements: [...canvasState.imageElements, newImage],
+            });
+          }
         });
       }
-    });
-  }, [
-    buttonScale2,
-    canvasState.imageElements,
-    onUpdateCanvas,
-    getCenterPosition,
-  ]);
+    },
+    [getCenterPosition, canvasState, onUpdateCanvas],
+  );
 
-  const handleDuplicate = useCallback(() => {
-    if (!selectedElementId || !selectedElementType) {
-      return;
-    }
+  const handleElementAction = useCallback(
+    (action: 'duplicate' | 'delete') => {
+      if (!selectedElementId || !selectedElementType) return;
 
-    if (selectedElementType === 'text') {
-      const element = canvasState.textElements.find(
-        t => t.id === selectedElementId,
-      );
-      if (element) {
+      const elements =
+        selectedElementType === 'text'
+          ? canvasState.textElements
+          : canvasState.imageElements;
+
+      const element = elements.find(el => el.id === selectedElementId);
+      if (!element) return;
+
+      if (action === 'duplicate') {
         const duplicated = {
           ...element,
           id: Date.now().toString(),
           x: element.x + 20,
           y: element.y + 20,
         };
+
+        const updateKey =
+          selectedElementType === 'text' ? 'textElements' : 'imageElements';
         onUpdateCanvas({
-          textElements: [...canvasState.textElements, duplicated],
+          [updateKey]: [...elements, duplicated],
         });
+      } else {
+        const filtered = elements.filter(el => el.id !== selectedElementId);
+        const updateKey =
+          selectedElementType === 'text' ? 'textElements' : 'imageElements';
+        onUpdateCanvas({[updateKey]: filtered});
+        onClearSelection();
       }
-    } else if (selectedElementType === 'image') {
-      const element = canvasState.imageElements.find(
-        i => i.id === selectedElementId,
-      );
-      if (element) {
-        const duplicated = {
-          ...element,
-          id: Date.now().toString(),
-          x: element.x + 20,
-          y: element.y + 20,
-        };
-        onUpdateCanvas({
-          imageElements: [...canvasState.imageElements, duplicated],
-        });
-      }
-    }
-  }, [selectedElementId, selectedElementType, canvasState, onUpdateCanvas]);
-
-  const handleDelete = useCallback(() => {
-    if (!selectedElementId || !selectedElementType) {
-      return;
-    }
-
-    if (selectedElementType === 'text') {
-      const filteredTexts = canvasState.textElements.filter(
-        t => t.id !== selectedElementId,
-      );
-      onUpdateCanvas({textElements: filteredTexts});
-    } else if (selectedElementType === 'image') {
-      const filteredImages = canvasState.imageElements.filter(
-        i => i.id !== selectedElementId,
-      );
-      onUpdateCanvas({imageElements: filteredImages});
-    }
-
-    onClearSelection();
-  }, [
-    selectedElementId,
-    selectedElementType,
-    canvasState,
-    onUpdateCanvas,
-    onClearSelection,
-  ]);
-
-  const selectedTextElement = canvasState.textElements.find(
-    t => t.id === selectedElementId,
+    },
+    [
+      selectedElementId,
+      selectedElementType,
+      canvasState,
+      onUpdateCanvas,
+      onClearSelection,
+    ],
   );
 
-  const selectedImageElement = canvasState.imageElements.find(
-    i => i.id === selectedElementId,
-  );
+  const selectedElement =
+    selectedElementType === 'text'
+      ? canvasState.textElements.find(t => t.id === selectedElementId)
+      : canvasState.imageElements.find(i => i.id === selectedElementId);
+
+  const actionButtons = [
+    {
+      icon: 'text-fields',
+      label: 'Add Text',
+      onPress: () => addElement('text'),
+    },
+    {
+      icon: 'image',
+      label: 'Add Image',
+      onPress: () => addElement('image'),
+    },
+    {
+      icon: 'share',
+      label: 'Share Now',
+      onPress: onShare,
+    },
+  ];
 
   // Animated styles
-  const bottomBarAnimatedStyle = useAnimatedStyle(() => ({
+  const bottomBarStyle = useAnimatedStyle(() => ({
     height: bottomBarHeight.value,
   }));
 
-  const addElementsAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: addElementsOpacity.value,
-    transform: [{translateY: addElementsTranslateY.value}],
+  const contentStyle = useAnimatedStyle(() => ({
+    opacity: contentOpacity.value,
   }));
 
-  const controlsAnimatedStyle = useAnimatedStyle(() => ({
+  const controlsStyle = useAnimatedStyle(() => ({
     opacity: controlsOpacity.value,
-    transform: [{translateY: controlsTranslateY.value}],
   }));
 
-  const button1AnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{scale: buttonScale1.value}],
-  }));
-
-  const button2AnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{scale: buttonScale2.value}],
-  }));
+  const renderActionButton = (
+    button: (typeof actionButtons)[0],
+    index: number,
+  ) => (
+    <Button
+      key={index}
+      variant="ghost"
+      onPress={button.onPress}
+      style={styles.actionButtonContainer}>
+      <View style={styles.actionIconContainer}>
+        <MaterialIcons
+          name={button.icon}
+          size={ICON_SIZE}
+          color={getColor('white')}
+        />
+      </View>
+      <Text style={styles.actionLabel}>{button.label}</Text>
+    </Button>
+  );
 
   return (
-    <Animated.View style={[styles.bottomBarContainer, bottomBarAnimatedStyle]}>
-      {/* Normal View */}
+    <Animated.View style={[styles.bottomBarContainer, bottomBarStyle]}>
+      {/* Add Elements View */}
       <Animated.View
-        style={[styles.addElementsContainer, addElementsAnimatedStyle]}
-        pointerEvents={selectedElementId ? 'none' : 'auto'}>
+        style={[styles.addElementsContainer, contentStyle]}
+        pointerEvents={isElementSelected ? 'none' : 'auto'}>
         <View style={styles.addElementsRow}>
-          {/* Add Text Button */}
-          <Animated.View style={button1AnimatedStyle}>
-            <Button
-              variant="ghost"
-              onPress={addText}
-              style={styles.actionButtonContainer}>
-              <View style={styles.actionIconContainer}>
-                <MaterialIcons
-                  name="text-fields"
-                  size={ICON_SIZE}
-                  color={getColor('white')}
-                />
-              </View>
-              <Text style={styles.actionLabel}>Add Text</Text>
-            </Button>
-          </Animated.View>
-
-          {/* Add Image Button */}
-          <Animated.View style={button2AnimatedStyle}>
-            <Button
-              variant="ghost"
-              onPress={addImage}
-              style={styles.actionButtonContainer}>
-              <View style={styles.actionIconContainer}>
-                <MaterialIcons
-                  name="image"
-                  size={ICON_SIZE}
-                  color={getColor('white')}
-                />
-              </View>
-              <Text style={styles.actionLabel}>Add Image</Text>
-            </Button>
-          </Animated.View>
-
-          {/* Export Button */}
-          <Animated.View style={button2AnimatedStyle}>
-            <Button
-              variant="ghost"
-              onPress={onShare}
-              style={styles.actionButtonContainer}>
-              <View style={styles.actionIconContainer}>
-                <MaterialIcons
-                  name="share"
-                  size={ICON_SIZE}
-                  color={getColor('white')}
-                />
-              </View>
-              <Text style={styles.actionLabel}>Share Now</Text>
-            </Button>
-          </Animated.View>
+          {actionButtons.map(renderActionButton)}
         </View>
       </Animated.View>
 
       {/* Element Controls View */}
       <Animated.View
-        style={[styles.controlsContainer, controlsAnimatedStyle]}
-        pointerEvents={selectedElementId ? 'auto' : 'none'}>
+        style={[styles.controlsContainer, controlsStyle]}
+        pointerEvents={isElementSelected ? 'auto' : 'none'}>
         <View style={styles.controlsHeader}>
           <Button
-            onPress={handleDelete}
+            onPress={() => handleElementAction('delete')}
             variant="ghost"
             size="sm"
             leftIcon={
@@ -366,7 +260,7 @@ const CanvasActions: FC<Props> = ({
             }
           />
           <Button
-            onPress={handleDuplicate}
+            onPress={() => handleElementAction('duplicate')}
             variant="ghost"
             size="sm"
             leftIcon={
@@ -377,7 +271,6 @@ const CanvasActions: FC<Props> = ({
               />
             }
           />
-          {/* Close Button */}
           <Button
             onPress={onClearSelection}
             variant="ghost"
@@ -387,15 +280,16 @@ const CanvasActions: FC<Props> = ({
             }
           />
         </View>
+
         {selectedElementType === 'text' ? (
           <TextActions
-            element={selectedTextElement}
+            element={selectedElement as TextElement}
             textElements={canvasState.textElements}
             onUpdateCanvas={onUpdateCanvas}
           />
         ) : (
           <ImageActions
-            element={selectedImageElement}
+            element={selectedElement as ImageElement}
             imageElements={canvasState.imageElements}
             onUpdateCanvas={onUpdateCanvas}
           />
