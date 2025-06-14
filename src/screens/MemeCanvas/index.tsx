@@ -9,11 +9,14 @@ import CanvasActions from '../../components/CanvasActions';
 import {RootStackParamList} from '../../routes/types';
 import MemeCanvas from '../../components/MemeCanvas';
 import {Button} from '../../components/Button';
+import useStyles from './styles';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MemeCanvas'>;
 
 const MemeCanvasScreen: FC<Props> = ({navigation, route}) => {
   const canvasRef = useRef<View>(null);
+  const {styles} = useStyles();
+
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
     null,
   );
@@ -98,13 +101,11 @@ const MemeCanvasScreen: FC<Props> = ({navigation, route}) => {
   // Empty state when no template is selected
   if (!canvasState.template) {
     return (
-      <SafeAreaView className="flex-1 bg-background">
-        <View className="flex-1 justify-center items-center px-6">
-          <View className="items-center space-y-4">
-            <Text className="text-3xl font-bold text-text mb-2">
-              Create Your Meme
-            </Text>
-            <Text className="text-lg text-muted text-center mb-8 leading-6">
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.emptyStateContainer}>
+          <View style={styles.emptyStateContent}>
+            <Text style={styles.title}>Create Your Meme</Text>
+            <Text style={styles.subtitle}>
               Choose a template to get started with your meme creation
             </Text>
             <Button
@@ -118,8 +119,8 @@ const MemeCanvasScreen: FC<Props> = ({navigation, route}) => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <View className="flex-1">
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
         <MemeCanvas
           canvasState={canvasState}
           onUpdateCanvas={handleUpdateCanvas}

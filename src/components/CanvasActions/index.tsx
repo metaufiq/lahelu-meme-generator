@@ -13,9 +13,9 @@ import Animated, {
 import {CanvasState, ImageElement, TextElement} from '../../types';
 import {Button} from '../Button';
 import ImageActions from './Actions/Image';
-import TextActions from './Actions/Text';
+import TextActions, {COLOR_PALETTE} from './Actions/Text';
 import useThemeStore from '../../stores/theme';
-import useStyles from './styles';
+import useStyles, {ICON_SIZE} from './styles';
 
 interface Props {
   selectedElementId: string | null;
@@ -31,7 +31,7 @@ interface Props {
   currentTranslateY?: number;
 }
 
-const NORMAL_HEIGHT = 90;
+const NORMAL_HEIGHT = 70;
 
 const CanvasActions: FC<Props> = ({
   selectedElementId,
@@ -48,7 +48,6 @@ const CanvasActions: FC<Props> = ({
 }) => {
   const styles = useStyles();
   const getColor = useThemeStore(state => state.getColor);
-  const getDimension = useThemeStore(state => state.getDimension);
 
   // Get screen dimensions as fallback
   const screenDimensions = Dimensions.get('window');
@@ -147,7 +146,7 @@ const CanvasActions: FC<Props> = ({
       x: centerPosition.x,
       y: centerPosition.y,
       fontSize: 24,
-      color: '#FFFFFF',
+      color: COLOR_PALETTE[0],
       fontFamily: 'Arial',
       rotation: 0,
       scale: 1,
@@ -243,7 +242,7 @@ const CanvasActions: FC<Props> = ({
               <View style={styles.actionIconContainer}>
                 <MaterialIcons
                   name="text-fields"
-                  size={getDimension('actionIconContainer')}
+                  size={ICON_SIZE}
                   color={getColor('white')}
                 />
               </View>
@@ -260,7 +259,7 @@ const CanvasActions: FC<Props> = ({
               <View style={styles.actionIconContainer}>
                 <MaterialIcons
                   name="image"
-                  size={getDimension('actionIconContainer')}
+                  size={ICON_SIZE}
                   color={getColor('white')}
                 />
               </View>
@@ -277,7 +276,7 @@ const CanvasActions: FC<Props> = ({
               <View style={styles.actionIconContainer}>
                 <MaterialIcons
                   name="download"
-                  size={getDimension('actionIconContainer')}
+                  size={ICON_SIZE}
                   color={getColor('white')}
                 />
               </View>

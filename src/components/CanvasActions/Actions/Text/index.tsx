@@ -15,9 +15,9 @@ interface Props {
   onClearSelection: () => void;
 }
 
-const COLOR_PALETTE = [
-  '#FFFFFF',
+export const COLOR_PALETTE = [
   '#000000',
+  '#FFFFFF',
   '#FF0000',
   '#00FF00',
   '#0000FF',

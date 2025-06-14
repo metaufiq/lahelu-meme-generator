@@ -38,7 +38,6 @@ const themeBorderRadius = {
   input: 8,
   card: 12,
   circle: 9999,
-  actionIcon: 12,
 } as const;
 
 const themeFontSizes = {
@@ -49,7 +48,6 @@ const themeFontSizes = {
   xl: 20,
   '2xl': 24,
   '3xl': 30,
-  '4xl': 36,
 } as const;
 
 const themeLineHeights = {
@@ -60,7 +58,6 @@ const themeLineHeights = {
   xl: 32,
   '2xl': 36,
   '3xl': 40,
-  '4xl': 44,
 } as const;
 
 const themeFontWeights = {
@@ -70,19 +67,6 @@ const themeFontWeights = {
   bold: '700',
 } as const;
 
-const themeDimensions = {
-  actionIcon: 48,
-  actionIconContainer: 24,
-  buttonHeight: 44,
-  inputHeight: 44,
-  tabBarHeight: 60,
-  headerHeight: 56,
-} as const;
-
-const themeMinWidth = {
-  iconButton: 80,
-  button: 120,
-} as const;
 
 
 export type ThemeSpacing = typeof themeSpacing;
@@ -90,8 +74,6 @@ export type ThemeBorderRadius = typeof themeBorderRadius;
 export type ThemeFontSizes = typeof themeFontSizes;
 export type ThemeLineHeights = typeof themeLineHeights;
 export type ThemeFontWeights = typeof themeFontWeights;
-export type ThemeDimensions = typeof themeDimensions;
-export type ThemeMinWidth = typeof themeMinWidth;
 
 export interface ThemeColors {
   background: string;
@@ -116,41 +98,9 @@ export interface ThemeColors {
   placeholderText: string;
   white: string;
   black: string;
-  gray50: string;
-  gray100: string;
-  gray200: string;
-  gray300: string;
-  gray400: string;
-  gray500: string;
-  gray600: string;
-  gray700: string;
-  gray800: string;
-  gray900: string;
 }
 
 export interface ThemeShadows {
-  none: {};
-  sm: {
-    shadowColor: string;
-    shadowOffset: { width: number; height: number };
-    shadowOpacity: number;
-    shadowRadius: number;
-    elevation: number;
-  };
-  md: {
-    shadowColor: string;
-    shadowOffset: { width: number; height: number };
-    shadowOpacity: number;
-    shadowRadius: number;
-    elevation: number;
-  };
-  lg: {
-    shadowColor: string;
-    shadowOffset: { width: number; height: number };
-    shadowOpacity: number;
-    shadowRadius: number;
-    elevation: number;
-  };
   button: {
     shadowColor: string;
     shadowOffset: { width: number; height: number };
@@ -188,21 +138,18 @@ export interface Theme {
   lineHeights: ThemeLineHeights;
   fontWeights: ThemeFontWeights;
   fontFamily: ThemeFontFamily;
-  minWidth: ThemeMinWidth;
-  dimensions: ThemeDimensions;
 }
 
 export interface ThemeState {
   theme: Theme;
   setTheme: (theme: Partial<Theme>) => void;
-  getColor: (colorKey: keyof ThemeColors) => string;
-  getSpacing: (spacingKey: keyof ThemeSpacing) => number;
-  getBorderRadius: (radiusKey: keyof ThemeBorderRadius) => number;
+  getColor: (colorKey: keyof ThemeColors) => ThemeColors[typeof colorKey];
+  getSpacing: (spacingKey: keyof ThemeSpacing) => ThemeSpacing[typeof spacingKey];
+  getBorderRadius: (radiusKey: keyof ThemeBorderRadius) => ThemeBorderRadius[typeof radiusKey];
   getShadow: (shadowKey: keyof ThemeShadows) => ThemeShadows[typeof shadowKey];
   getFontSize: (sizeKey: keyof ThemeFontSizes) => ThemeFontSizes[typeof sizeKey];
   getLineHeight: (lineHeightKey: keyof ThemeLineHeights) => ThemeLineHeights[typeof lineHeightKey];
   getFontWeight: (weightKey: keyof ThemeFontWeights) => ThemeFontWeights[typeof weightKey];
-  getDimension: (dimensionKey: keyof ThemeDimensions) => ThemeDimensions[typeof dimensionKey];
 }
 
 const defaultTheme: Theme = {
@@ -229,42 +176,10 @@ const defaultTheme: Theme = {
     placeholderText: '#9ca3af',
     white: '#ffffff',
     black: '#000000',
-    gray50: '#f9fafb',
-    gray100: '#f3f4f6',
-    gray200: '#e5e7eb',
-    gray300: '#d1d5db',
-    gray400: '#9ca3af',
-    gray500: '#6b7280',
-    gray600: '#4b5563',
-    gray700: '#374151',
-    gray800: '#1f2937',
-    gray900: '#111827',
   },
   spacing: themeSpacing,
   borderRadius: themeBorderRadius,
   shadows: {
-    none: {},
-    sm: {
-      shadowColor: '#000000',
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.05,
-      shadowRadius: 2,
-      elevation: 1,
-    },
-    md: {
-      shadowColor: '#000000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
-    },
-    lg: {
-      shadowColor: '#000000',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.15,
-      shadowRadius: 8,
-      elevation: 5,
-    },
     button: {
       shadowColor: '#000000',
       shadowOffset: { width: 0, height: 2 },
@@ -302,8 +217,6 @@ const defaultTheme: Theme = {
       default: ['monospace'],
     }) as string[],
   },
-  minWidth: themeMinWidth,
-  dimensions: themeDimensions,
 };
 
 
@@ -343,10 +256,6 @@ const useThemeStore = create<ThemeState>((set, get) => ({
   getFontWeight: (weightKey) => {
     const { theme } = get();
     return theme.fontWeights[weightKey];
-  },
-  getDimension: (dimensionKey) => {
-    const { theme } = get();
-    return theme.dimensions[dimensionKey];
   },
 }));
 

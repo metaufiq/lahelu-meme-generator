@@ -119,7 +119,7 @@ const MemeCanvas = forwardRef<View, Props>(
       <View style={styles.container}>
         <GestureHandlerRootView>
           <GestureDetector gesture={composedGesture}>
-            <Animated.View style={[styles.canvas, animatedStyle]} ref={ref}>
+            <Animated.View style={[animatedStyle]} ref={ref}>
               <Svg
                 width={canvasState.template.width}
                 height={canvasState.template.height}

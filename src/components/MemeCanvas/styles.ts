@@ -18,7 +18,6 @@ const useStyles = () => {
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: getColor('background'),
-      padding: getSpacing(4),
     },
     canvas: {
       backgroundColor: getColor('surface'),

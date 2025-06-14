@@ -15,23 +15,22 @@ const useStyles = () => {
 
   const styles = useMemo(() => StyleSheet.create({
     container: {
-      padding: getSpacing(2.5),
       backgroundColor: getColor('background'),
     },
     templateItem: {
       flex: 1,
-      margin: 5, // Using template-specific spacing
+      margin: 5,
       alignItems: 'center',
       backgroundColor: getColor('surface'),
       borderRadius: getBorderRadius('card'),
-      padding: getSpacing(3),
       minHeight: 180,
       borderWidth: 1,
+      gap: 20,
       borderColor: getColor('borderLight'),
       ...getShadow('card'),
     },
     templateImage: {
-      width: 120,
+      width: '100%',
       height: 120,
       borderRadius: getBorderRadius('lg'),
       backgroundColor: getColor('surfaceSecondary'),
