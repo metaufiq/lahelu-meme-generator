@@ -57,19 +57,18 @@ const MemeCanvasScreen: FC<Props> = ({navigation, route}) => {
     }
   };
 
-  useEffect(() => {
-    if (route.params?.selectedTemplate) {
-      setCanvasState(prev => ({
-        ...prev,
-        template: route.params!.selectedTemplate!,
-        textElements: [],
-        imageElements: [],
-      }));
-    }
-  }, [route.params, route.params?.selectedTemplate]);
-
   const navigateToTemplateSelection = useCallback(() => {
-    navigation.navigate('TemplateSelection');
+    navigation.navigate('TemplateSelection', {
+      onGoBack(template) {
+        navigation.setParams({selectedTemplate: template});
+        setCanvasState(prev => ({
+          ...prev,
+          template,
+          textElements: [],
+          imageElements: [],
+        }));
+      },
+    });
   }, [navigation]);
 
   const handleUpdateCanvas = useCallback((updates: Partial<CanvasState>) => {

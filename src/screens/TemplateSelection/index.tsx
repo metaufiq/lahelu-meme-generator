@@ -13,10 +13,12 @@ type TemplateSelectionScreenProps = NativeStackScreenProps<
 >;
 
 const TemplateSelectionScreen: React.FC<TemplateSelectionScreenProps> = ({
+  route,
   navigation,
 }) => {
   const handleSelectTemplate = (template: MemeTemplate) => {
-    navigation.navigate('MemeCanvas', {selectedTemplate: template});
+    route.params?.onGoBack?.(template);
+    navigation.goBack();
   };
 
   return (
