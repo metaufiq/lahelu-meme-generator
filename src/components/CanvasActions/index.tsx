@@ -12,7 +12,8 @@ import Animated, {
 import {CanvasState, ElementType, ImageElement, TextElement} from '../../types';
 import {Button} from '../Button';
 import ImageActions from './Actions/Image';
-import TextActions, {COLOR_PALETTE} from './Actions/Text';
+import TextActions from './Actions/Text';
+import {COLOR_PALETTE} from './Actions/Text/constants';
 import useThemeStore from '../../stores/theme';
 import useStyles, {ICON_SIZE} from './styles';
 
