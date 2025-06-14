@@ -1,11 +1,11 @@
 import {FC, useCallback, useEffect, useRef, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {Share, Text, View} from 'react-native';
+import {Share, Text, View, Dimensions} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {captureRef} from 'react-native-view-shot';
 
 import {CanvasState} from '../../types';
-import BottomControls from '../../components/BottomControls';
+import CanvasActions from '../../components/CanvasActions';
 import {RootStackParamList} from '../../routes/types';
 import MemeCanvas from '../../components/MemeCanvas';
 import {Button} from '../../components/Button';
@@ -20,6 +20,18 @@ const MemeCanvasScreen: FC<Props> = ({navigation, route}) => {
   const [selectedElementType, setSelectedElementType] = useState<
     'text' | 'image' | null
   >(null);
+
+  // Track current transform values for proper centering
+  const [currentScale, setCurrentScale] = useState(1);
+  const [currentTranslateX, setCurrentTranslateX] = useState(0);
+  const [currentTranslateY, setCurrentTranslateY] = useState(0);
+
+  // Get screen dimensions to calculate canvas size
+  const screenDimensions = Dimensions.get('window');
+
+  // Calculate canvas dimensions (adjust these values based on your actual canvas size)
+  const canvasWidth = screenDimensions.width;
+  const canvasHeight = screenDimensions.height * 0.7; // Assuming canvas takes 70% of screen height
 
   const [canvasState, setCanvasState] = useState<CanvasState>(() => ({
     template: route.params?.selectedTemplate || null,
@@ -73,6 +85,16 @@ const MemeCanvasScreen: FC<Props> = ({navigation, route}) => {
     setSelectedElementType(null);
   }, []);
 
+  // Callback to receive transform updates from MemeCanvas
+  const handleTransformUpdate = useCallback(
+    (transform: {scale: number; translateX: number; translateY: number}) => {
+      setCurrentScale(transform.scale);
+      setCurrentTranslateX(transform.translateX);
+      setCurrentTranslateY(transform.translateY);
+    },
+    [],
+  );
+
   // Empty state when no template is selected
   if (!canvasState.template) {
     return (
@@ -87,7 +109,7 @@ const MemeCanvasScreen: FC<Props> = ({navigation, route}) => {
             </Text>
             <Button
               onPress={navigateToTemplateSelection}
-              title="Chooose Template"
+              title="Choose Template"
             />
           </View>
         </View>
@@ -97,24 +119,28 @@ const MemeCanvasScreen: FC<Props> = ({navigation, route}) => {
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      {/* Canvas Area */}
       <View className="flex-1">
         <MemeCanvas
           canvasState={canvasState}
           onUpdateCanvas={handleUpdateCanvas}
           onSelectElement={handleSelectElement}
+          onTransformUpdate={handleTransformUpdate}
           ref={canvasRef}
         />
       </View>
 
-      {/* Bottom Controls */}
-      <BottomControls
+      <CanvasActions
         selectedElementId={selectedElementId}
         selectedElementType={selectedElementType}
         canvasState={canvasState}
         onExport={onExport}
         onUpdateCanvas={handleUpdateCanvas}
         onClearSelection={handleClearSelection}
+        canvasWidth={canvasWidth}
+        canvasHeight={canvasHeight}
+        currentScale={currentScale}
+        currentTranslateX={currentTranslateX}
+        currentTranslateY={currentTranslateY}
       />
     </SafeAreaView>
   );

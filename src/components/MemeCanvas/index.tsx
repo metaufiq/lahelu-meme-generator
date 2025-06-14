@@ -1,4 +1,4 @@
-import React, {forwardRef} from 'react';
+import React, {forwardRef, useCallback} from 'react';
 import {View} from 'react-native';
 import {
   Gesture,
@@ -9,6 +9,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
+  runOnJS,
 } from 'react-native-reanimated';
 import Svg, {Image as SvgImage} from 'react-native-svg';
 
@@ -21,10 +22,15 @@ interface Props {
   canvasState: CanvasState;
   onUpdateCanvas: (state: Partial<CanvasState>) => void;
   onSelectElement: (id: string, type: 'text' | 'image') => void;
+  onTransformUpdate?: (transform: {
+    scale: number;
+    translateX: number;
+    translateY: number;
+  }) => void;
 }
 
 const MemeCanvas = forwardRef<View, Props>(
-  ({canvasState, onUpdateCanvas, onSelectElement}, ref) => {
+  ({canvasState, onUpdateCanvas, onSelectElement, onTransformUpdate}, ref) => {
     const scale = useSharedValue(1);
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
@@ -33,6 +39,22 @@ const MemeCanvas = forwardRef<View, Props>(
     const focalX = useSharedValue(0);
     const focalY = useSharedValue(0);
 
+    // Callback to notify parent of transform changes
+    const notifyTransformUpdate = useCallback(
+      (
+        scaleValue: number,
+        translateXValue: number,
+        translateYValue: number,
+      ) => {
+        onTransformUpdate?.({
+          scale: scaleValue,
+          translateX: translateXValue,
+          translateY: translateYValue,
+        });
+      },
+      [onTransformUpdate],
+    );
+
     const pinchGesture = Gesture.Pinch()
       .onStart(event => {
         focalX.value = event.focalX;
@@ -40,9 +62,22 @@ const MemeCanvas = forwardRef<View, Props>(
       })
       .onUpdate(event => {
         scale.value = event.scale;
+        // Notify parent of scale change
+        runOnJS(notifyTransformUpdate)(
+          event.scale,
+          translateX.value,
+          translateY.value,
+        );
       })
       .onEnd(() => {
-        scale.value = withSpring(Math.max(0.5, Math.min(scale.value, 3)));
+        const newScale = Math.max(0.5, Math.min(scale.value, 3));
+        scale.value = withSpring(newScale);
+        // Notify parent of final scale value
+        runOnJS(notifyTransformUpdate)(
+          newScale,
+          translateX.value,
+          translateY.value,
+        );
       });
 
     const panGesture = Gesture.Pan()
@@ -51,8 +86,18 @@ const MemeCanvas = forwardRef<View, Props>(
         savedTranslateY.value = translateY.value;
       })
       .onUpdate(e => {
-        translateX.value = savedTranslateX.value + e.translationX;
-        translateY.value = savedTranslateY.value + e.translationY;
+        const newTranslateX = savedTranslateX.value + e.translationX;
+        const newTranslateY = savedTranslateY.value + e.translationY;
+
+        translateX.value = newTranslateX;
+        translateY.value = newTranslateY;
+
+        // Notify parent of translation change
+        runOnJS(notifyTransformUpdate)(
+          scale.value,
+          newTranslateX,
+          newTranslateY,
+        );
       });
 
     const composedGesture = Gesture.Simultaneous(pinchGesture, panGesture);

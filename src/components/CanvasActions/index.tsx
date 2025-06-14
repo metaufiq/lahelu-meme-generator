@@ -1,5 +1,5 @@
 import React, {FC, useCallback, useEffect} from 'react';
-import {Text, View} from 'react-native';
+import {Text, View, Dimensions} from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Animated, {
@@ -11,29 +11,70 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import {CanvasState, ImageElement, TextElement} from '../../types';
-import TextControls from '../TextControls';
-import ImageControls from '../ImageControls';
 import {Button} from '../Button';
+import ImageActions from './Actions/Image';
+import TextActions from './Actions/Text';
 
-interface BottomControlsProps {
+interface Props {
   selectedElementId: string | null;
   selectedElementType: 'text' | 'image' | null;
   canvasState: CanvasState;
   onUpdateCanvas: (updates: Partial<CanvasState>) => void;
   onClearSelection: () => void;
   onExport: () => Promise<void>;
+  canvasWidth?: number;
+  canvasHeight?: number;
+  currentScale?: number;
+  currentTranslateX?: number;
+  currentTranslateY?: number;
 }
 
 const NORMAL_HEIGHT = 90;
 
-const BottomControls: FC<BottomControlsProps> = ({
+const CanvasActions: FC<Props> = ({
   selectedElementId,
   selectedElementType,
   canvasState,
   onUpdateCanvas,
   onClearSelection,
   onExport,
+  canvasWidth,
+  canvasHeight,
+  currentScale = 1,
+  currentTranslateX = 0,
+  currentTranslateY = 0,
 }) => {
+  // Get screen dimensions as fallback
+  const screenDimensions = Dimensions.get('window');
+
+  // Calculate center position based on current viewport
+  const getCenterPosition = useCallback(() => {
+    // Use provided canvas dimensions or fallback to screen dimensions
+    const width = canvasWidth || screenDimensions.width;
+    const height = canvasHeight || screenDimensions.height * 0.7;
+
+    // Get the center of the current viewport (screen center)
+    const viewportCenterX = width / 2;
+    const viewportCenterY = height / 2;
+
+    // Convert viewport center to canvas coordinates by accounting for current transform
+    // Reverse the transform: (screenPoint - translation) / scale = canvasPoint
+    const canvasCenterX = (viewportCenterX - currentTranslateX) / currentScale;
+    const canvasCenterY = (viewportCenterY - currentTranslateY) / currentScale;
+
+    return {
+      x: canvasCenterX,
+      y: canvasCenterY,
+    };
+  }, [
+    canvasWidth,
+    canvasHeight,
+    screenDimensions,
+    currentScale,
+    currentTranslateX,
+    currentTranslateY,
+  ]);
+
   // Animation values
   const bottomBarHeight = useSharedValue(NORMAL_HEIGHT);
   const addElementsOpacity = useSharedValue(1);
@@ -93,11 +134,12 @@ const BottomControls: FC<BottomControlsProps> = ({
       buttonScale1.value = withSpring(1, {damping: 8});
     });
 
+    const centerPosition = getCenterPosition();
     const newText: TextElement = {
       id: Date.now().toString(),
       text: 'Your text here',
-      x: 50,
-      y: 50,
+      x: centerPosition.x,
+      y: centerPosition.y,
       fontSize: 24,
       color: '#FFFFFF',
       fontFamily: 'Arial',
@@ -108,7 +150,12 @@ const BottomControls: FC<BottomControlsProps> = ({
     onUpdateCanvas({
       textElements: [...canvasState.textElements, newText],
     });
-  }, [buttonScale1, canvasState.textElements, onUpdateCanvas]);
+  }, [
+    buttonScale1,
+    canvasState.textElements,
+    onUpdateCanvas,
+    getCenterPosition,
+  ]);
 
   const addImage = useCallback(() => {
     buttonScale2.value = withSpring(0.9, {damping: 10}, () => {
@@ -118,11 +165,13 @@ const BottomControls: FC<BottomControlsProps> = ({
     launchImageLibrary({mediaType: 'photo'}, response => {
       if (response.assets && response.assets[0]) {
         const asset = response.assets[0];
+        const centerPosition = getCenterPosition();
+
         const newImage: ImageElement = {
           id: Date.now().toString(),
           uri: asset.uri!,
-          x: 50,
-          y: 50,
+          x: centerPosition.x,
+          y: centerPosition.y,
           width: 100,
           height: 100,
           rotation: 0,
@@ -135,7 +184,12 @@ const BottomControls: FC<BottomControlsProps> = ({
         });
       }
     });
-  }, [buttonScale2, canvasState.imageElements, onUpdateCanvas]);
+  }, [
+    buttonScale2,
+    canvasState.imageElements,
+    onUpdateCanvas,
+    getCenterPosition,
+  ]);
 
   const selectedTextElement = canvasState.textElements.find(
     t => t.id === selectedElementId,
@@ -233,14 +287,14 @@ const BottomControls: FC<BottomControlsProps> = ({
           />
         </View>
         {selectedElementType === 'text' ? (
-          <TextControls
+          <TextActions
             element={selectedTextElement}
             textElements={canvasState.textElements}
             onUpdateCanvas={onUpdateCanvas}
             onClearSelection={onClearSelection}
           />
         ) : (
-          <ImageControls
+          <ImageActions
             element={selectedImageElement}
             imageElements={canvasState.imageElements}
             onUpdateCanvas={onUpdateCanvas}
@@ -252,4 +306,4 @@ const BottomControls: FC<BottomControlsProps> = ({
   );
 };
 
-export default BottomControls;
+export default CanvasActions;

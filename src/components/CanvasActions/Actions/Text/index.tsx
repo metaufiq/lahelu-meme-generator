@@ -2,8 +2,9 @@ import React, {useCallback} from 'react';
 import {View, Text, TextInput, TouchableOpacity} from 'react-native';
 import Slider from '@react-native-community/slider';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {TextElement, CanvasState} from '../../types';
-import {Button} from '../Button';
+
+import {TextElement, CanvasState} from '../../../../types';
+import {Button} from '../../../Button';
 
 interface Props {
   element?: TextElement | null;
@@ -12,7 +13,7 @@ interface Props {
   onClearSelection: () => void;
 }
 
-const TextControls: React.FC<Props> = ({
+const TextActions: React.FC<Props> = ({
   element,
   textElements,
   onUpdateCanvas,
@@ -115,4 +116,4 @@ const TextControls: React.FC<Props> = ({
   );
 };
 
-export default TextControls;
+export default TextActions;

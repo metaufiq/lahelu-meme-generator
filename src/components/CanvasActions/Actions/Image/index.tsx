@@ -2,8 +2,8 @@ import React, {useCallback} from 'react';
 import {View, Text} from 'react-native';
 import Slider from '@react-native-community/slider';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {ImageElement, CanvasState} from '../../types';
-import {Button} from '../Button';
+import {ImageElement, CanvasState} from '../../../../types';
+import {Button} from '../../../Button';
 
 interface Props {
   element?: ImageElement | null;
@@ -12,7 +12,7 @@ interface Props {
   onClearSelection: () => void;
 }
 
-const ImageControls: React.FC<Props> = ({
+const ImageActions: React.FC<Props> = ({
   element,
   imageElements,
   onUpdateCanvas,
@@ -126,4 +126,4 @@ const ImageControls: React.FC<Props> = ({
   );
 };
 
-export default ImageControls;
+export default ImageActions;
