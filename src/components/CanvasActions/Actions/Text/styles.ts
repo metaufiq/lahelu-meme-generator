@@ -13,6 +13,9 @@ const useStyles = () => {
 
   const styles = useMemo(() => StyleSheet.create({
     container: {
+      flex: 1,
+    },
+    tabContent: {
       padding: getSpacing(4),
     },
     textInput: {
@@ -44,6 +47,7 @@ const useStyles = () => {
       flexDirection: 'row',
       alignItems: 'center',
       marginBottom: getSpacing(4),
+      flexWrap: 'wrap',
     },
     colorPickerLabel: {
       color: getColor('textSecondary'),
@@ -51,12 +55,15 @@ const useStyles = () => {
       fontWeight: '500',
       fontFamily: theme.fontFamily.sans[0],
       marginRight: getSpacing(3),
+      marginBottom: getSpacing(2),
+      width: '100%',
     },
     colorButton: {
       width: 32,
       height: 32,
       borderRadius: getBorderRadius('circle'),
       marginLeft: getSpacing(2),
+      marginBottom: getSpacing(2),
       borderWidth: 2,
       borderColor: getColor('border'),
     },
@@ -68,6 +75,7 @@ const useStyles = () => {
       flexDirection: 'row',
       justifyContent: 'center',
       gap: getSpacing(2),
+      flexWrap: 'wrap',
     },
   }), [
     getColor,
@@ -93,6 +101,7 @@ const useStyles = () => {
 
   return {
     containerStyle: styles.container,
+    tabContentStyle: styles.tabContent,
     textInputStyle: styles.textInput,
     labelStyle: styles.label,
     sliderContainerStyle: styles.sliderContainer,

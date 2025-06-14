@@ -94,7 +94,7 @@ const CanvasActions: FC<Props> = ({
     if (selectedElementId) {
       // Switch to controls view
       bottomBarHeight.value = withSpring(
-        selectedElementType === 'text' ? 300 : 350,
+        selectedElementType === 'text' ? 240 : 350,
         {damping: 15, stiffness: 100},
       );
       addElementsOpacity.value = withTiming(0, {duration: 200});
