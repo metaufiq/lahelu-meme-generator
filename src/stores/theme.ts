@@ -1,3 +1,4 @@
+// stores/theme.ts
 import { create } from 'zustand';
 import { Platform } from 'react-native';
 
@@ -11,6 +12,8 @@ export interface ThemeColors {
   primaryLight: string;
   text: string;
   textSecondary: string;
+  surface: string; // For cards, inputs, etc.
+  placeholderText: string;
 }
 
 export interface ThemeSpacing {
@@ -21,11 +24,16 @@ export interface ThemeSpacing {
   4: number;
   6: number;
   8: number;
+  12: number;
+  16: number;
   [key: string]: number;
 }
 
 export interface ThemeBorderRadius {
   button: number;
+  input: number;
+  card: number;
+  circle: number;
 }
 
 export interface ThemeShadows {
@@ -43,6 +51,22 @@ export interface ThemeShadows {
     shadowRadius: number;
     elevation: number; // Android
   };
+  card: {
+    shadowColor: string;
+    shadowOffset: { width: number; height: number };
+    shadowOpacity: number;
+    shadowRadius: number;
+    elevation: number; // Android
+  };
+}
+
+export interface ThemeFontSizes {
+  xs: 12;
+  sm: 14;
+  md: 16;
+  lg: 18;
+  xl: 20;
+  '2xl': 24;
 }
 
 export interface ThemeFontFamily {
@@ -58,6 +82,7 @@ export interface Theme {
   spacing: ThemeSpacing;
   borderRadius: ThemeBorderRadius;
   shadows: ThemeShadows;
+  fontSizes: ThemeFontSizes;
   fontFamily: ThemeFontFamily;
   minWidth: ThemeMinWidth;
 }
@@ -69,6 +94,7 @@ export interface ThemeState {
   getSpacing: (spacingKey: keyof ThemeSpacing | number) => number;
   getBorderRadius: (radiusKey: keyof ThemeBorderRadius) => number;
   getShadow: (shadowKey: keyof ThemeShadows) => ThemeShadows[keyof ThemeShadows];
+  getFontSize: (sizeKey: keyof ThemeFontSizes) => ThemeFontSizes[typeof sizeKey];
 }
 
 const defaultTheme: Theme = {
@@ -82,6 +108,8 @@ const defaultTheme: Theme = {
     primaryLight: '#a8d4ff',
     text: '#1a1a1a',
     textSecondary: '#374151',
+    surface: '#ffffff',
+    placeholderText: '#9ca3af',
   },
   spacing: {
     0.5: 2,
@@ -91,9 +119,14 @@ const defaultTheme: Theme = {
     4: 16,
     6: 24,
     8: 32,
+    12: 48,
+    16: 64,
   },
   borderRadius: {
     button: 8,
+    input: 8,
+    card: 12,
+    circle: 9999,
   },
   shadows: {
     button: {
@@ -110,6 +143,21 @@ const defaultTheme: Theme = {
       shadowRadius: 2,
       elevation: 1, // Android elevation
     },
+    card: {
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.05,
+      shadowRadius: 6,
+      elevation: 2, // Android elevation
+    },
+  },
+  fontSizes: {
+    xs: 12,
+    sm: 14,
+    md: 16,
+    lg: 18,
+    xl: 20,
+    '2xl': 24,
   },
   fontFamily: {
     sans: Platform.select({
@@ -149,5 +197,9 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
   getShadow: (shadowKey) => {
     const { theme } = get();
     return theme.shadows[shadowKey];
+  },
+  getFontSize: (sizeKey) => {
+    const { theme } = get();
+    return theme.fontSizes[sizeKey];
   },
 }));

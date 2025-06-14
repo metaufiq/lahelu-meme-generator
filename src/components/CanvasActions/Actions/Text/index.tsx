@@ -1,3 +1,4 @@
+// TextActions/index.tsx
 import React, {useCallback} from 'react';
 import {View, Text, TextInput, TouchableOpacity} from 'react-native';
 import Slider from '@react-native-community/slider';
@@ -5,6 +6,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import {TextElement, CanvasState} from '../../../../types';
 import {Button} from '../../../Button';
+import useStyles from './styles';
 
 interface Props {
   element?: TextElement | null;
@@ -13,12 +15,35 @@ interface Props {
   onClearSelection: () => void;
 }
 
+const COLOR_PALETTE = [
+  '#FFFFFF',
+  '#000000',
+  '#FF0000',
+  '#00FF00',
+  '#0000FF',
+  '#FFFF00',
+];
+
 const TextActions: React.FC<Props> = ({
   element,
   textElements,
   onUpdateCanvas,
   onClearSelection,
 }) => {
+  const {
+    containerStyle,
+    textInputStyle,
+    labelStyle,
+    sliderContainerStyle,
+    sliderStyle,
+    colorPickerContainerStyle,
+    colorPickerLabelStyle,
+    buttonContainerStyle,
+    getColorButtonStyle,
+    sliderColors,
+    placeholderTextColor,
+  } = useStyles();
+
   const handleUpdate = useCallback(
     (updatedElement: TextElement) => {
       const updatedTexts = textElements.map(t =>
@@ -58,46 +83,43 @@ const TextActions: React.FC<Props> = ({
   }
 
   return (
-    <View className="p-4">
+    <View style={containerStyle}>
       <TextInput
-        className="border border-gray-300 p-3 mb-4 bg-white rounded-lg text-base"
+        style={textInputStyle}
         value={element.text}
         onChangeText={text => handleUpdate({...element, text})}
         placeholder="Enter text..."
-        placeholderTextColor="#9ca3af"
+        placeholderTextColor={placeholderTextColor}
       />
 
-      <View className="mb-4">
-        <Text className="text-gray-700 text-sm font-medium mb-2">
+      <View style={sliderContainerStyle}>
+        <Text style={labelStyle}>
           Font Size: {Math.round(element.fontSize)}
         </Text>
         <Slider
-          className="w-full h-10"
+          style={sliderStyle}
           minimumValue={12}
           maximumValue={72}
           value={element.fontSize}
           onValueChange={fontSize => handleUpdate({...element, fontSize})}
-          minimumTrackTintColor="#55a4ff"
-          maximumTrackTintColor="#e5e7eb"
-          thumbTintColor="#55a4ff"
+          minimumTrackTintColor={sliderColors.minimum}
+          maximumTrackTintColor={sliderColors.maximum}
+          thumbTintColor={sliderColors.thumb}
         />
       </View>
 
-      <View className="flex-row items-center mb-4">
-        <Text className="text-gray-700 text-sm font-medium mr-3">Color:</Text>
-        {['#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF', '#FFFF00'].map(
-          color => (
-            <TouchableOpacity
-              key={color}
-              className="w-8 h-8 rounded-full ml-2 border-2 border-gray-300"
-              style={{backgroundColor: color}}
-              onPress={() => handleUpdate({...element, color})}
-            />
-          ),
-        )}
+      <View style={colorPickerContainerStyle}>
+        <Text style={colorPickerLabelStyle}>Color:</Text>
+        {COLOR_PALETTE.map(color => (
+          <TouchableOpacity
+            key={color}
+            style={getColorButtonStyle(color, element.color === color)}
+            onPress={() => handleUpdate({...element, color})}
+          />
+        ))}
       </View>
 
-      <View className="flex-row justify-center gap-2">
+      <View style={buttonContainerStyle}>
         <Button
           onPress={handleDuplicate}
           title="Duplicate"

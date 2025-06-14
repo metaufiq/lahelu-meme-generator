@@ -20,6 +20,7 @@ const useStyles = ({
   const getSpacing = useThemeStore((state) => state.getSpacing);
   const getBorderRadius = useThemeStore((state) => state.getBorderRadius);
   const getShadow = useThemeStore((state) => state.getShadow);
+  const getFontSize = useThemeStore((state) => state.getFontSize);
 
   const styles = useMemo(()=>StyleSheet.create({
     // Base styles
@@ -106,19 +107,19 @@ const useStyles = ({
 
     // Text size variants
     textSmall: {
-      fontSize: 14,
+      fontSize: getFontSize('sm'),
       lineHeight: 20,
     },
     textMedium: {
-      fontSize: 16,
+      fontSize: getFontSize('md'),
       lineHeight: 24,
     },
     textLarge: {
-      fontSize: 18,
+      fontSize: getFontSize('lg'),
       lineHeight: 28,
     },
     textXLarge: {
-      fontSize: 20,
+      fontSize: getFontSize('xl'),
       lineHeight: 32,
     },
 
@@ -166,7 +167,7 @@ const useStyles = ({
     iconContainerLarge: {
       marginHorizontal: 8,
     },
-  }), [getBorderRadius, getColor, getShadow, getSpacing, theme.fontFamily.sans]);
+  }), [getBorderRadius, getColor, getFontSize, getShadow, getSpacing, theme.fontFamily.sans]);
 
   // Helper functions to get computed styles
   const getSizeStyle = useCallback(() => {

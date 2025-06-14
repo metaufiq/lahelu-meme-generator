@@ -7,6 +7,7 @@ const useStyles = () => {
   const theme = useThemeStore((state) => state.theme);
   const getColor = useThemeStore((state) => state.getColor);
   const getSpacing = useThemeStore((state) => state.getSpacing);
+  const getFontSize = useThemeStore(state=>state.getFontSize);
 
   const styles = useMemo(()=>StyleSheet.create({
     container: {
@@ -17,7 +18,7 @@ const useStyles = () => {
     },
     label: {
       color: getColor('textSecondary'),
-      fontSize: 14,
+      fontSize: getFontSize('sm'),
       fontWeight: '500',
       marginBottom: getSpacing(2),
       fontFamily: theme.fontFamily.sans[0],
@@ -31,7 +32,7 @@ const useStyles = () => {
       justifyContent: 'center',
       gap: getSpacing(2),
     },
-  }), [getColor, getSpacing, theme.fontFamily.sans]);
+  }), [getColor, getFontSize, getSpacing, theme.fontFamily.sans]);
 
   const sliderColors = useMemo(()=>({
     minimumTrackTintColor: getColor('primary'),
