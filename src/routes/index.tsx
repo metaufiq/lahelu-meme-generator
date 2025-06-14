@@ -28,9 +28,11 @@ const _memeCanvasOption = ({
   headerLeft: () => route.params?.selectedTemplate && <Text>Meme Canvas</Text>,
   headerRight: () =>
     route.params?.selectedTemplate && (
-      <Button onPress={() => navigation.push('TemplateSelection')} size="sm">
-        <Text className="text-white">Change Template</Text>
-      </Button>
+      <Button
+        onPress={() => navigation.push('TemplateSelection')}
+        size="sm"
+        title="Change Template"
+      />
     ),
 });
 
