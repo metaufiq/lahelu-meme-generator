@@ -140,7 +140,7 @@ export interface Theme {
   fontFamily: ThemeFontFamily;
 }
 
-export interface ThemeState {
+interface State {
   theme: Theme;
   setTheme: (theme: Partial<Theme>) => void;
   getColor: (colorKey: keyof ThemeColors) => ThemeColors[typeof colorKey];
@@ -220,7 +220,7 @@ const defaultTheme: Theme = {
 };
 
 
-const useThemeStore = create<ThemeState>((set, get) => ({
+const useThemeStore = create<State>((set, get) => ({
   theme: defaultTheme,
   setTheme: (newTheme) =>
     set((state) => ({

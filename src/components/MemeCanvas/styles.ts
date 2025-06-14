@@ -38,6 +38,7 @@ const useStyles = () => {
       lineHeight: getLineHeight('md'),
       fontWeight: getFontWeight('normal'),
       textAlign: 'center',
+      marginTop: getSpacing(4),
     },
     emptyCanvasSubtext: {
       color: getColor('textMuted'),

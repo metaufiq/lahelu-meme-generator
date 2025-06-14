@@ -5,6 +5,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {MemeTemplate} from '../../types';
 import TemplateGrid from '../../components/TemplateGrid';
 import {RootStackParamList} from '../../routes/types';
+import {useTemplateStore} from '../../stores/template';
 import styles from './styles';
 
 type TemplateSelectionScreenProps = NativeStackScreenProps<
@@ -13,11 +14,13 @@ type TemplateSelectionScreenProps = NativeStackScreenProps<
 >;
 
 const TemplateSelectionScreen: React.FC<TemplateSelectionScreenProps> = ({
-  route,
   navigation,
 }) => {
+  const setSelectedTemplate = useTemplateStore(
+    state => state.setSelectedTemplate,
+  );
   const handleSelectTemplate = (template: MemeTemplate) => {
-    route.params?.onGoBack?.(template);
+    setSelectedTemplate(template);
     navigation.goBack();
   };
 

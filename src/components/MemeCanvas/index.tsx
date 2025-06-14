@@ -1,5 +1,5 @@
 import React, {forwardRef, useCallback} from 'react';
-import {View} from 'react-native';
+import {ActivityIndicator, Text, View} from 'react-native';
 import {
   Gesture,
   GestureDetector,
@@ -17,6 +17,7 @@ import {CanvasState, ElementType} from '../../types';
 import DraggableText from './Draggable/Text';
 import DraggableImage from './Draggable/Image';
 import useStyles from './styles';
+import useCacheStatusStore from '../../stores/cacheStatus';
 
 interface Props {
   canvasState: CanvasState;
@@ -27,11 +28,22 @@ interface Props {
     translateX: number;
     translateY: number;
   }) => void;
+  isTemplateLoaded?: boolean;
 }
 
 const MemeCanvas = forwardRef<View, Props>(
-  ({canvasState, onUpdateCanvas, onSelectElement, onTransformUpdate}, ref) => {
+  (
+    {
+      canvasState,
+      onUpdateCanvas,
+      onSelectElement,
+      onTransformUpdate,
+      isTemplateLoaded,
+    },
+    ref,
+  ) => {
     const styles = useStyles();
+    const addImageToCacheMap = useCacheStatusStore(state => state.addImage);
     const scale = useSharedValue(1);
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
@@ -111,8 +123,19 @@ const MemeCanvas = forwardRef<View, Props>(
       ],
     }));
 
-    if (!canvasState.template) {
-      return null;
+    if (!isTemplateLoaded || !canvasState.template) {
+      return (
+        <View style={styles.container}>
+          <View style={styles.emptyCanvas}>
+            <ActivityIndicator size="large" color="#999" />
+            <Text style={styles.emptyCanvasText}>Loading template...</Text>
+            <Text style={styles.emptyCanvasSubtext}>
+              This may take a moment. Please check your internet connection if
+              it takes too long.
+            </Text>
+          </View>
+        </View>
+      );
     }
 
     return (
@@ -128,6 +151,7 @@ const MemeCanvas = forwardRef<View, Props>(
                   href={canvasState.template.url}
                   width={canvasState.template.width}
                   height={canvasState.template.height}
+                  onLoad={() => addImageToCacheMap(canvasState.template!.url)}
                 />
               </Svg>
 

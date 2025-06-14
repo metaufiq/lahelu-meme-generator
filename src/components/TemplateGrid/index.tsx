@@ -3,6 +3,9 @@ import {FlatList, TouchableOpacity, Image, Text} from 'react-native';
 
 import {MemeTemplate} from '../../types';
 import useStyles from './styles';
+import useCacheStatusStore, {
+  State as CacheStatusState,
+} from '../../stores/cacheStatus';
 
 const MEME_TEMPLATES: MemeTemplate[] = [
   {
@@ -30,19 +33,29 @@ interface Props {
 
 interface RenderTemplateProps extends Props {
   styles: ReturnType<typeof useStyles>;
+  addImageToCacheMap: CacheStatusState['addImage'];
 }
 
-const _renderTemplate = ({onSelectTemplate, styles}: RenderTemplateProps) =>
+const _renderTemplate = ({
+  onSelectTemplate,
+  styles,
+  addImageToCacheMap,
+}: RenderTemplateProps) =>
   useCallback(
     ({item}: {item: MemeTemplate}) => (
       <TouchableOpacity
         style={styles.templateItem}
         onPress={() => onSelectTemplate(item)}>
-        <Image source={{uri: item.thumbnail}} style={styles.templateImage} />
+        <Image
+          source={{uri: item.thumbnail}}
+          style={styles.templateImage}
+          onLoad={() => addImageToCacheMap(item.url)}
+        />
         <Text style={styles.templateName}>{item.name}</Text>
       </TouchableOpacity>
     ),
     [
+      addImageToCacheMap,
       onSelectTemplate,
       styles.templateImage,
       styles.templateItem,
@@ -52,11 +65,16 @@ const _renderTemplate = ({onSelectTemplate, styles}: RenderTemplateProps) =>
 
 const TemplateGrid: React.FC<Props> = ({onSelectTemplate}) => {
   const styles = useStyles();
+  const addImageToCacheMap = useCacheStatusStore(state => state.addImage);
 
   return (
     <FlatList
       data={MEME_TEMPLATES}
-      renderItem={_renderTemplate({onSelectTemplate, styles})}
+      renderItem={_renderTemplate({
+        onSelectTemplate,
+        styles,
+        addImageToCacheMap,
+      })}
       numColumns={2}
       keyExtractor={item => item.id}
       contentContainerStyle={styles.container}

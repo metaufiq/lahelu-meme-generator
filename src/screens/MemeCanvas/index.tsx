@@ -11,12 +11,15 @@ import {RootStackParamList} from '../../routes/types';
 import MemeCanvas from '../../components/MemeCanvas';
 import {Button} from '../../components/Button';
 import useStyles from './styles';
+import useCacheStatusStore from '../../stores/cacheStatus';
+import {useTemplateStore} from '../../stores/template';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MemeCanvas'>;
 
 const MemeCanvasScreen: FC<Props> = ({navigation, route}) => {
   const canvasRef = useRef<View>(null);
   const {styles} = useStyles();
+  const selectedTemplate = useTemplateStore(state => state.selectedTemplate);
 
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
     null,
@@ -37,13 +40,18 @@ const MemeCanvasScreen: FC<Props> = ({navigation, route}) => {
   const canvasHeight = screenDimensions.height * 0.7; // Assuming canvas takes 70% of screen height
 
   const [canvasState, setCanvasState] = useState<CanvasState>(() => ({
-    template: route.params?.selectedTemplate || null,
+    template: selectedTemplate || null,
     textElements: [],
     imageElements: [],
     scale: 1,
     translateX: 0,
     translateY: 0,
   }));
+
+  const url = canvasState.template?.url;
+  const isTemplateLoaded = useCacheStatusStore(
+    useCallback(state => (url ? state.images[url] : undefined), [url]),
+  );
 
   const onShare = async () => {
     try {
@@ -57,18 +65,20 @@ const MemeCanvasScreen: FC<Props> = ({navigation, route}) => {
     }
   };
 
+  useEffect(() => {
+    if (selectedTemplate) {
+      navigation.setParams({selectedTemplate});
+      setCanvasState(prev => ({
+        ...prev,
+        template: selectedTemplate,
+        textElements: [],
+        imageElements: [],
+      }));
+    }
+  }, [selectedTemplate]);
+
   const navigateToTemplateSelection = useCallback(() => {
-    navigation.navigate('TemplateSelection', {
-      onGoBack(template) {
-        navigation.setParams({selectedTemplate: template});
-        setCanvasState(prev => ({
-          ...prev,
-          template,
-          textElements: [],
-          imageElements: [],
-        }));
-      },
-    });
+    navigation.navigate('TemplateSelection');
   }, [navigation]);
 
   const handleUpdateCanvas = useCallback((updates: Partial<CanvasState>) => {
@@ -126,23 +136,26 @@ const MemeCanvasScreen: FC<Props> = ({navigation, route}) => {
           onUpdateCanvas={handleUpdateCanvas}
           onSelectElement={handleSelectElement}
           onTransformUpdate={handleTransformUpdate}
+          isTemplateLoaded={isTemplateLoaded}
           ref={canvasRef}
         />
       </View>
 
-      <CanvasActions
-        selectedElementId={selectedElementId}
-        selectedElementType={selectedElementType}
-        canvasState={canvasState}
-        onShare={onShare}
-        onUpdateCanvas={handleUpdateCanvas}
-        onClearSelection={handleClearSelection}
-        canvasWidth={canvasWidth}
-        canvasHeight={canvasHeight}
-        currentScale={currentScale}
-        currentTranslateX={currentTranslateX}
-        currentTranslateY={currentTranslateY}
-      />
+      {isTemplateLoaded && (
+        <CanvasActions
+          selectedElementId={selectedElementId}
+          selectedElementType={selectedElementType}
+          canvasState={canvasState}
+          onShare={onShare}
+          onUpdateCanvas={handleUpdateCanvas}
+          onClearSelection={handleClearSelection}
+          canvasWidth={canvasWidth}
+          canvasHeight={canvasHeight}
+          currentScale={currentScale}
+          currentTranslateX={currentTranslateX}
+          currentTranslateY={currentTranslateY}
+        />
+      )}
     </SafeAreaView>
   );
 };
