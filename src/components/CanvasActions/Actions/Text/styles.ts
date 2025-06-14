@@ -10,7 +10,6 @@ const useStyles = () => {
   const getSpacing = useThemeStore((state) => state.getSpacing);
   const getBorderRadius = useThemeStore((state) => state.getBorderRadius);
   const getFontSize = useThemeStore((state) => state.getFontSize);
-  const getLineHeight = useThemeStore((state) => state.getLineHeight);
 
   const styles = useMemo(() => StyleSheet.create({
     container: {
@@ -19,21 +18,19 @@ const useStyles = () => {
     tabContent: {
       padding: getSpacing(4),
     },
+
     textInput: {
       borderWidth: 1,
       borderColor: getColor('border'),
       paddingHorizontal: getSpacing(3),
-      paddingVertical: getSpacing(3),
+      paddingVertical: getSpacing(1),
       marginBottom: getSpacing(4),
       backgroundColor: getColor('surface'),
       borderRadius: getBorderRadius('input'),
       fontSize: getFontSize('md'),
       fontFamily: theme.fontFamily.sans[0],
       color: getColor('text'),
-      minHeight: 44, // Ensures minimum touch target and text visibility
-      textAlignVertical: 'center', // Centers text vertically on Android
-      includeFontPadding: false, // Removes extra padding on Android
-      lineHeight: getLineHeight('md'), // Provides proper line spacing
+      minHeight: 48,
     },
     label: {
       color: getColor('textSecondary'),
@@ -111,7 +108,7 @@ const useStyles = () => {
       gap: getSpacing(2),
       flexWrap: 'wrap',
     },
-  }), [getSpacing, getColor, getBorderRadius, getFontSize, theme.fontFamily.sans, getLineHeight]);
+  }), [getSpacing, getColor, getBorderRadius, getFontSize, theme.fontFamily.sans]);
 
   const getColorButtonStyle = useCallback((color: string, isSelected: boolean): ViewStyle => {
     const baseStyle = {

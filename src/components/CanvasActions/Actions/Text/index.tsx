@@ -131,6 +131,32 @@ const TextActions: React.FC<Props> = ({
         ),
       },
       {
+        id: 'width',
+        label: 'Width',
+        icon: (
+          <MaterialIcons name="swap-horiz" size={16} color="currentColor" />
+        ),
+        content: (
+          <View style={tabContentStyle}>
+            <View style={sliderContainerStyle}>
+              <Text style={labelStyle}>
+                Text Width: {Math.round(element.width || 100)}%
+              </Text>
+              <Slider
+                style={sliderStyle}
+                minimumValue={1}
+                maximumValue={100}
+                value={element.width || 100}
+                onValueChange={width => handleUpdate({...element, width})}
+                minimumTrackTintColor={sliderColors.minimum}
+                maximumTrackTintColor={sliderColors.maximum}
+                thumbTintColor={sliderColors.thumb}
+              />
+            </View>
+          </View>
+        ),
+      },
+      {
         id: 'font',
         label: 'Font',
         icon: (

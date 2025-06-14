@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, View} from 'react-native';
+import {Text, View, Dimensions} from 'react-native';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
@@ -14,12 +14,22 @@ interface Props {
   element: TextElement;
   onUpdate: (element: TextElement) => void;
   onSelect: () => void;
+  containerWidth?: number; // Optional container width for percentage calculations
 }
 
-const DraggableText: React.FC<Props> = ({element, onUpdate, onSelect}) => {
+const DraggableText: React.FC<Props> = ({
+  element,
+  onUpdate,
+  onSelect,
+  containerWidth,
+}) => {
   const styles = useStyles();
   const translateX = useSharedValue(element.x);
   const translateY = useSharedValue(element.y);
+
+  // Get screen width as fallback if containerWidth is not provided
+  const screenWidth = Dimensions.get('window').width;
+  const baseWidth = containerWidth || screenWidth;
 
   const panGesture = Gesture.Pan()
     .onStart(() => {
@@ -46,12 +56,24 @@ const DraggableText: React.FC<Props> = ({element, onUpdate, onSelect}) => {
     ],
   }));
 
+  // Calculate actual width from percentage
+  const actualWidth = element.width
+    ? (element.width / 100) * baseWidth
+    : undefined;
+
   const textContainerStyle = [
     styles.textContainer,
-    element.backgroundColor &&
-      element.backgroundColor !== 'transparent' && {
-        backgroundColor: element.backgroundColor,
-      },
+    element.backgroundColor
+      ? element.backgroundColor !== 'transparent' && {
+          backgroundColor: element.backgroundColor,
+        }
+      : undefined,
+    // Apply width constraint if specified
+    actualWidth
+      ? {
+          width: actualWidth,
+        }
+      : undefined,
   ];
 
   return (
