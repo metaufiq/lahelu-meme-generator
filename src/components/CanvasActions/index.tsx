@@ -93,7 +93,7 @@ const CanvasActions: FC<Props> = ({
   useEffect(() => {
     if (selectedElementId) {
       // Switch to controls view
-      bottomBarHeight.value = withSpring(190, {damping: 15, stiffness: 100});
+      bottomBarHeight.value = withSpring(200, {damping: 15, stiffness: 100});
       addElementsOpacity.value = withTiming(0, {duration: 200});
       addElementsTranslateY.value = withTiming(-10, {duration: 200});
       controlsOpacity.value = withTiming(1, {

@@ -17,6 +17,7 @@ export interface TextElement {
   fontFamily: string;
   rotation: number;
   scale: number;
+  backgroundColor?: string;
 }
 
 export interface ImageElement {

@@ -1,6 +1,12 @@
 // TextActions/index.tsx
 import React, {useCallback, useMemo} from 'react';
-import {View, Text, TextInput, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import Slider from '@react-native-community/slider';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
@@ -21,6 +27,23 @@ export const COLOR_PALETTE = [
   '#00FF00',
   '#0000FF',
   '#FFFF00',
+  '#FF6B6B',
+  '#4ECDC4',
+  '#45B7D1',
+  '#96CEB4',
+  '#FFEAA7',
+  '#DDA0DD',
+];
+
+export const FONT_FAMILIES = [
+  {label: 'System Default', value: 'System'},
+  {label: 'Arial', value: 'Arial'},
+  {label: 'Helvetica', value: 'Helvetica'},
+  {label: 'Times New Roman', value: 'Times New Roman'},
+  {label: 'Courier New', value: 'Courier New'},
+  {label: 'Georgia', value: 'Georgia'},
+  {label: 'Verdana', value: 'Verdana'},
+  {label: 'Impact', value: 'Impact'},
 ];
 
 const TextActions: React.FC<Props> = ({
@@ -38,6 +61,11 @@ const TextActions: React.FC<Props> = ({
     colorPickerLabelStyle,
     tabContentStyle,
     getColorButtonStyle,
+    fontFamilyContainerStyle,
+    fontFamilyButtonStyle,
+    getFontFamilyButtonStyle,
+    fontFamilyButtonTextStyle,
+    colorRowStyle,
     sliderColors,
     placeholderTextColor,
   } = useStyles();
@@ -80,7 +108,7 @@ const TextActions: React.FC<Props> = ({
         id: 'size',
         label: 'Size',
         icon: (
-          <MaterialIcons name="open-in-full" size={16} color="currentColor" />
+          <MaterialIcons name="format-size" size={16} color="currentColor" />
         ),
         content: (
           <View style={tabContentStyle}>
@@ -103,22 +131,102 @@ const TextActions: React.FC<Props> = ({
         ),
       },
       {
-        id: 'style',
-        label: 'Style',
-        icon: <MaterialIcons name="palette" size={16} color="currentColor" />,
+        id: 'font',
+        label: 'Font',
+        icon: (
+          <MaterialIcons name="font-download" size={16} color="currentColor" />
+        ),
         content: (
-          <View style={tabContentStyle}>
-            <View style={colorPickerContainerStyle}>
-              <Text style={colorPickerLabelStyle}>Color:</Text>
-              {COLOR_PALETTE.map(color => (
-                <TouchableOpacity
-                  key={color}
-                  style={getColorButtonStyle(color, element.color === color)}
-                  onPress={() => handleUpdate({...element, color})}
-                />
-              ))}
+          <ScrollView
+            style={tabContentStyle}
+            showsVerticalScrollIndicator={false}>
+            <View style={fontFamilyContainerStyle}>
+              <Text style={colorPickerLabelStyle}>Font Family:</Text>
+              <View style={fontFamilyButtonStyle}>
+                {FONT_FAMILIES.map(font => (
+                  <TouchableOpacity
+                    key={font.value}
+                    style={getFontFamilyButtonStyle(
+                      element.fontFamily === font.value,
+                    )}
+                    onPress={() =>
+                      handleUpdate({...element, fontFamily: font.value})
+                    }>
+                    <Text style={fontFamilyButtonTextStyle}>{font.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
-          </View>
+          </ScrollView>
+        ),
+      },
+      {
+        id: 'color',
+        label: 'Color',
+        icon: (
+          <MaterialIcons name="color-lens" size={16} color="currentColor" />
+        ),
+        content: (
+          <ScrollView
+            style={tabContentStyle}
+            showsVerticalScrollIndicator={false}>
+            <View style={colorPickerContainerStyle}>
+              <Text style={colorPickerLabelStyle}>Text Color:</Text>
+              <View style={colorRowStyle}>
+                {COLOR_PALETTE.map(color => (
+                  <TouchableOpacity
+                    key={`text-${color}`}
+                    style={getColorButtonStyle(color, element.color === color)}
+                    onPress={() => handleUpdate({...element, color})}
+                  />
+                ))}
+              </View>
+            </View>
+          </ScrollView>
+        ),
+      },
+      {
+        id: 'background',
+        label: 'Background',
+        icon: (
+          <MaterialIcons
+            name="format-color-fill"
+            size={16}
+            color="currentColor"
+          />
+        ),
+        content: (
+          <ScrollView
+            style={tabContentStyle}
+            showsVerticalScrollIndicator={false}>
+            <View style={colorPickerContainerStyle}>
+              <Text style={colorPickerLabelStyle}>Background Color:</Text>
+              <View style={colorRowStyle}>
+                <TouchableOpacity
+                  style={getColorButtonStyle(
+                    'transparent',
+                    element.backgroundColor === 'transparent',
+                  )}
+                  onPress={() =>
+                    handleUpdate({...element, backgroundColor: 'transparent'})
+                  }>
+                  <MaterialIcons name="block" size={16} color="#666" />
+                </TouchableOpacity>
+                {COLOR_PALETTE.map(color => (
+                  <TouchableOpacity
+                    key={`bg-${color}`}
+                    style={getColorButtonStyle(
+                      color,
+                      element.backgroundColor === color,
+                    )}
+                    onPress={() =>
+                      handleUpdate({...element, backgroundColor: color})
+                    }
+                  />
+                ))}
+              </View>
+            </View>
+          </ScrollView>
         ),
       },
     ];
@@ -135,6 +243,11 @@ const TextActions: React.FC<Props> = ({
     colorPickerContainerStyle,
     colorPickerLabelStyle,
     getColorButtonStyle,
+    fontFamilyContainerStyle,
+    fontFamilyButtonStyle,
+    getFontFamilyButtonStyle,
+    fontFamilyButtonTextStyle,
+    colorRowStyle,
   ]);
 
   if (!element) {

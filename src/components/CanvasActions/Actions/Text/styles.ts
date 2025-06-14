@@ -50,32 +50,60 @@ const useStyles = () => {
       height: 40,
     },
     colorPickerContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
       marginBottom: getSpacing(4),
-      flexWrap: 'wrap',
     },
     colorPickerLabel: {
       color: getColor('textSecondary'),
       fontSize: getFontSize('sm'),
       fontWeight: '500',
       fontFamily: theme.fontFamily.sans[0],
-      marginRight: getSpacing(3),
       marginBottom: getSpacing(2),
-      width: '100%',
+    },
+    colorRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: getSpacing(2),
     },
     colorButton: {
       width: 32,
       height: 32,
       borderRadius: getBorderRadius('circle'),
-      marginLeft: getSpacing(2),
-      marginBottom: getSpacing(2),
       borderWidth: 2,
       borderColor: getColor('border'),
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     colorButtonSelected: {
       borderWidth: 3,
       borderColor: getColor('primary'),
+    },
+    fontFamilyContainer: {
+      marginBottom: getSpacing(4),
+    },
+    fontFamilyButtons: {
+      gap: getSpacing(2),
+    },
+    fontFamilyButton: {
+      paddingHorizontal: getSpacing(3),
+      paddingVertical: getSpacing(2),
+      borderRadius: getBorderRadius('button'),
+      borderWidth: 1,
+      borderColor: getColor('border'),
+      backgroundColor: getColor('surface'),
+    },
+    fontFamilyButtonSelected: {
+      backgroundColor: getColor('primary'),
+      borderColor: getColor('primary'),
+    },
+    fontFamilyButtonText: {
+      fontSize: getFontSize('sm'),
+      color: getColor('text'),
+      fontFamily: theme.fontFamily.sans[0],
+      textAlign: 'center',
+    },
+    fontFamilyButtonTextSelected: {
+      color: getColor('primary'),
+      fontWeight: '600',
     },
     buttonContainer: {
       flexDirection: 'row',
@@ -86,12 +114,30 @@ const useStyles = () => {
   }), [getSpacing, getColor, getBorderRadius, getFontSize, theme.fontFamily.sans, getLineHeight]);
 
   const getColorButtonStyle = useCallback((color: string, isSelected: boolean): ViewStyle => {
-    return {
+    const baseStyle = {
       ...styles.colorButton,
-      backgroundColor: color,
-      ...(isSelected && styles.colorButtonSelected),
+      backgroundColor: color === 'transparent' ? 'transparent' : color,
     };
+
+    if (isSelected) {
+      return {
+        ...baseStyle,
+        ...styles.colorButtonSelected,
+      };
+    }
+
+    return baseStyle;
   }, [styles.colorButton, styles.colorButtonSelected]);
+
+  const getFontFamilyButtonStyle = useCallback((isSelected: boolean): ViewStyle => {
+    if (isSelected) {
+      return {
+        ...styles.fontFamilyButton,
+        ...styles.fontFamilyButtonSelected,
+      };
+    }
+    return styles.fontFamilyButton;
+  }, [styles.fontFamilyButton, styles.fontFamilyButtonSelected]);
 
   const sliderColors = useMemo(() => ({
     minimum: getColor('primary'),
@@ -108,9 +154,14 @@ const useStyles = () => {
     sliderStyle: styles.slider,
     colorPickerContainerStyle: styles.colorPickerContainer,
     colorPickerLabelStyle: styles.colorPickerLabel,
+    colorRowStyle: styles.colorRow,
     colorButtonStyle: styles.colorButton,
+    fontFamilyContainerStyle: styles.fontFamilyContainer,
+    fontFamilyButtonStyle: styles.fontFamilyButtons,
+    fontFamilyButtonTextStyle: styles.fontFamilyButtonText,
     buttonContainerStyle: styles.buttonContainer,
     getColorButtonStyle,
+    getFontFamilyButtonStyle,
     sliderColors,
     placeholderTextColor: getColor('placeholderText'),
   };

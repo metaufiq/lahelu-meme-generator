@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text} from 'react-native';
+import {Text, View} from 'react-native';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
@@ -46,20 +46,30 @@ const DraggableText: React.FC<Props> = ({element, onUpdate, onSelect}) => {
     ],
   }));
 
+  const textContainerStyle = [
+    styles.textContainer,
+    element.backgroundColor &&
+      element.backgroundColor !== 'transparent' && {
+        backgroundColor: element.backgroundColor,
+      },
+  ];
+
   return (
     <GestureDetector gesture={panGesture}>
       <Animated.View style={[animatedStyle, styles.container]}>
-        <Text
-          style={[
-            {
-              fontSize: element.fontSize,
-              color: element.color,
-              fontFamily: element.fontFamily,
-            },
-            styles.text,
-          ]}>
-          {element.text}
-        </Text>
+        <View style={textContainerStyle}>
+          <Text
+            style={[
+              {
+                fontSize: element.fontSize,
+                color: element.color,
+                fontFamily: element.fontFamily,
+              },
+              styles.text,
+            ]}>
+            {element.text}
+          </Text>
+        </View>
       </Animated.View>
     </GestureDetector>
   );
