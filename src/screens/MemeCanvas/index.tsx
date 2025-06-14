@@ -1,8 +1,9 @@
 import {FC, useCallback, useEffect, useRef, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {Share, Text, View, Dimensions} from 'react-native';
+import {Text, View, Dimensions} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {captureRef} from 'react-native-view-shot';
+import Share from 'react-native-share';
 
 import {CanvasState} from '../../types';
 import CanvasActions from '../../components/CanvasActions';
@@ -45,11 +46,12 @@ const MemeCanvasScreen: FC<Props> = ({navigation, route}) => {
     translateY: 0,
   }));
 
-  const onExport = async () => {
+  const onShare = async () => {
     try {
       const url = await captureRef(canvasRef);
-      await Share.share({
+      await Share.open({
         url,
+        filename: canvasState.template?.name,
       });
     } catch (error) {
       console.error('Export failed', error);
@@ -134,7 +136,7 @@ const MemeCanvasScreen: FC<Props> = ({navigation, route}) => {
         selectedElementId={selectedElementId}
         selectedElementType={selectedElementType}
         canvasState={canvasState}
-        onExport={onExport}
+        onShare={onShare}
         onUpdateCanvas={handleUpdateCanvas}
         onClearSelection={handleClearSelection}
         canvasWidth={canvasWidth}

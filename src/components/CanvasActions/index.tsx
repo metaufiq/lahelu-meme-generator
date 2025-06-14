@@ -23,7 +23,7 @@ interface Props {
   canvasState: CanvasState;
   onUpdateCanvas: (updates: Partial<CanvasState>) => void;
   onClearSelection: () => void;
-  onExport: () => Promise<void>;
+  onShare: () => Promise<void>;
   canvasWidth?: number;
   canvasHeight?: number;
   currentScale?: number;
@@ -39,7 +39,7 @@ const CanvasActions: FC<Props> = ({
   canvasState,
   onUpdateCanvas,
   onClearSelection,
-  onExport,
+  onShare,
   canvasWidth,
   canvasHeight,
   currentScale = 1,
@@ -292,7 +292,8 @@ const CanvasActions: FC<Props> = ({
     <Animated.View style={[styles.bottomBarContainer, bottomBarAnimatedStyle]}>
       {/* Normal View */}
       <Animated.View
-        style={[styles.addElementsContainer, addElementsAnimatedStyle]}>
+        style={[styles.addElementsContainer, addElementsAnimatedStyle]}
+        pointerEvents={selectedElementId ? 'none' : 'auto'}>
         <View style={styles.addElementsRow}>
           {/* Add Text Button */}
           <Animated.View style={button1AnimatedStyle}>
@@ -332,7 +333,7 @@ const CanvasActions: FC<Props> = ({
           <Animated.View style={button2AnimatedStyle}>
             <Button
               variant="ghost"
-              onPress={onExport}
+              onPress={onShare}
               style={styles.actionButtonContainer}>
               <View style={styles.actionIconContainer}>
                 <MaterialIcons
@@ -348,7 +349,9 @@ const CanvasActions: FC<Props> = ({
       </Animated.View>
 
       {/* Element Controls View */}
-      <Animated.View style={[styles.controlsContainer, controlsAnimatedStyle]}>
+      <Animated.View
+        style={[styles.controlsContainer, controlsAnimatedStyle]}
+        pointerEvents={selectedElementId ? 'auto' : 'none'}>
         <View style={styles.controlsHeader}>
           <Button
             onPress={handleDelete}
